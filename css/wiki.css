@@ -1,0 +1,812 @@
+/* ============ WIKI FEED (derniers articles sur l'accueil) ============ */
+.wiki-feed {
+    margin-top: 2.5rem;
+}
+
+.wiki-feed-hidden {
+    display: none;
+}
+
+.wiki-feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1.25rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.wiki-feed-header h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.7rem;
+    color: var(--text-color);
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.wiki-feed-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.wiki-feed-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    color: var(--text-color);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    border: 1px solid rgba(255, 154, 107, 0.08);
+}
+
+.wiki-feed-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: rgba(255, 154, 107, 0.25);
+}
+
+.wiki-feed-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--pastel-peach);
+    color: var(--accent-deep);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.dark-mode .wiki-feed-icon {
+    background: rgba(255, 216, 190, 0.15);
+    color: var(--accent-color);
+}
+
+.wiki-feed-item:hover .wiki-feed-icon {
+    transform: rotate(-6deg) scale(1.05);
+}
+
+.wiki-feed-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.wiki-feed-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-color);
+    line-height: 1.3;
+    margin-bottom: 0.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wiki-feed-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.wiki-feed-arrow {
+    color: var(--accent-color);
+    font-weight: 700;
+    font-size: 1.2rem;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.wiki-feed-item:hover .wiki-feed-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.wiki-feed-skeleton {
+    height: 72px;
+    border-radius: var(--border-radius);
+    background: linear-gradient(90deg,
+        var(--bg-soft) 0%,
+        var(--pastel-cream) 50%,
+        var(--bg-soft) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.4s ease-in-out infinite;
+    border: 1px solid rgba(255, 154, 107, 0.08);
+}
+
+.dark-mode .wiki-feed-skeleton {
+    background: linear-gradient(90deg,
+        var(--bg-card) 0%,
+        rgba(255, 255, 255, 0.03) 50%,
+        var(--bg-card) 100%);
+    background-size: 200% 100%;
+}
+
+@keyframes skeleton-loading {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ============ GRILLE DE LIVRES (page wiki.html) ============ */
+.wiki-books {
+    margin: 1rem 0 3rem;
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.8rem;
+}
+
+.book-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(255, 154, 107, 0.08);
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    position: relative;
+}
+
+.book-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--accent-color);
+}
+
+.book-card-cover {
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--pastel-cream);
+    position: relative;
+}
+
+.book-card-cover-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg,
+        var(--pastel-peach) 0%,
+        var(--pastel-cream) 50%,
+        var(--pastel-mint) 100%);
+    color: var(--accent-color);
+}
+
+.dark-mode .book-card-cover-empty {
+    background: linear-gradient(135deg,
+        rgba(255, 154, 107, 0.25) 0%,
+        rgba(255, 193, 138, 0.2) 50%,
+        rgba(186, 230, 211, 0.2) 100%);
+    color: var(--accent-color);
+}
+
+.book-card-cover-skeleton {
+    background: linear-gradient(90deg,
+        var(--bg-soft) 0%,
+        var(--pastel-cream) 50%,
+        var(--bg-soft) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.4s ease-in-out infinite;
+}
+
+.dark-mode .book-card-cover-skeleton {
+    background: linear-gradient(90deg,
+        var(--bg-card) 0%,
+        rgba(255, 255, 255, 0.04) 50%,
+        var(--bg-card) 100%);
+    background-size: 200% 100%;
+}
+
+.book-card-body {
+    padding: 1.4rem 1.5rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 0.6rem;
+}
+
+.book-card-title {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.book-card-description {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.book-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 0.6rem;
+    border-top: 1px dashed rgba(255, 154, 107, 0.18);
+}
+
+.book-card-meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.book-card-arrow {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    transition: transform var(--transition);
+}
+
+.book-card:hover .book-card-arrow {
+    transform: translateX(4px);
+}
+
+.book-card-skeleton .skeleton-line {
+    height: 14px;
+    border-radius: 7px;
+    background: linear-gradient(90deg,
+        var(--bg-soft) 0%,
+        var(--pastel-cream) 50%,
+        var(--bg-soft) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.4s ease-in-out infinite;
+}
+
+.book-card-skeleton .skeleton-title {
+    height: 20px;
+    width: 70%;
+    margin-bottom: 0.3rem;
+}
+
+.book-card-skeleton .skeleton-short {
+    width: 55%;
+}
+
+.dark-mode .book-card-skeleton .skeleton-line {
+    background: linear-gradient(90deg,
+        var(--bg-card) 0%,
+        rgba(255, 255, 255, 0.04) 50%,
+        var(--bg-card) 100%);
+    background-size: 200% 100%;
+}
+
+.wiki-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+}
+
+.wiki-empty a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.wiki-empty a:hover {
+    text-decoration: underline;
+}
+
+/* ============ SOUS-SECTION DE PAGE (ex: wiki dans projets) ============ */
+.page-subsection {
+    margin-top: 3rem;
+}
+
+.page-subsection-header {
+    margin-bottom: 1.8rem;
+    text-align: center;
+}
+
+.page-subsection-header h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.9rem;
+    color: var(--text-color);
+    margin: 0 0 0.4rem;
+}
+
+.page-subsection-header p {
+    font-size: 1.02rem;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.55;
+}
+
+@media (max-width: 680px) {
+    .page-subsection { margin-top: 2rem; }
+    .page-subsection-header h2 { font-size: 1.5rem; }
+}
+
+
+/* Scope : applique OpenDyslexic uniquement sur le contenu wiki */
+.dyslexic-font #wiki-view,
+.dyslexic-font #wiki-view *,
+.dyslexic-font #wiki-feed,
+.dyslexic-font #wiki-feed *,
+.dyslexic-font .wiki-breadcrumb,
+.dyslexic-font .wiki-breadcrumb * {
+    font-family: 'OpenDyslexic', 'Nunito', 'Comic Neue', sans-serif !important;
+}
+
+/* Un peu plus d'air entre les lettres, recommande en dyslexie */
+.dyslexic-font .wiki-article-body {
+    letter-spacing: 0.02em;
+    word-spacing: 0.05em;
+}
+
+/* ============ RECHERCHE WIKI ============ */
+.sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.wiki-search {
+    position: relative;
+    margin: 0 0 1.5rem;
+    max-width: 640px;
+}
+
+.wiki-search-icon {
+    position: absolute;
+    left: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.wiki-search:focus-within .wiki-search-icon {
+    color: var(--accent-color);
+}
+
+.wiki-search-input {
+    width: 100%;
+    padding: 0.9rem 3.2rem 0.9rem 3rem;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--text-color);
+    background: var(--bg-card);
+    border: 2px solid rgba(255, 154, 107, 0.18);
+    border-radius: var(--border-radius-pill);
+    box-shadow: var(--card-shadow);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.wiki-search-input::placeholder { color: var(--text-muted); opacity: 0.9; }
+.wiki-search-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(255, 154, 107, 0.18), var(--card-shadow);
+}
+
+.wiki-search-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px; height: 14px;
+    background: currentColor;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M18 6L6 18M6 6l12 12' stroke='black' stroke-width='3' stroke-linecap='round' fill='none'/></svg>") center/contain no-repeat;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M18 6L6 18M6 6l12 12' stroke='black' stroke-width='3' stroke-linecap='round' fill='none'/></svg>") center/contain no-repeat;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.wiki-search-kbd {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.78rem;
+    padding: 0.15rem 0.55rem;
+    border: 1px solid rgba(255, 154, 107, 0.3);
+    border-radius: 8px;
+    color: var(--text-muted);
+    background: var(--bg-soft);
+    pointer-events: none;
+}
+.wiki-search:focus-within .wiki-search-kbd { opacity: 0; }
+
+.wiki-search-results {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    left: 0; right: 0;
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 154, 107, 0.18);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow-hover);
+    max-height: 60vh;
+    overflow-y: auto;
+    z-index: 90;
+    padding: 0.35rem;
+    animation: fade-in 0.18s ease-out;
+}
+
+.wiki-search-result {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.9rem;
+    align-items: center;
+    padding: 0.7rem 0.85rem;
+    text-decoration: none;
+    color: var(--text-color);
+    border-radius: var(--border-radius-sm, 12px);
+    transition: background 0.15s;
+}
+
+.wiki-search-result:hover,
+.wiki-search-result.active {
+    background: var(--bg-soft);
+}
+
+.wiki-search-result-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: var(--bg-soft);
+    color: var(--accent-color);
+}
+
+.wiki-search-result.active .wiki-search-result-icon,
+.wiki-search-result:hover .wiki-search-result-icon {
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+}
+
+.wiki-search-result-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.wiki-search-result-title {
+    font-weight: 600;
+    font-family: 'Fredoka', sans-serif;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wiki-search-result-snippet {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-top: 0.15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+}
+
+.wiki-search-result-snippet strong,
+.wiki-search-result-title strong {
+    color: var(--accent-deep);
+    background: rgba(255, 154, 107, 0.18);
+    padding: 0 0.15rem;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.wiki-search-result-type {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    background: var(--bg-soft);
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--border-radius-pill);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.wiki-search-empty,
+.wiki-search-loading {
+    margin: 0;
+    padding: 1rem 0.9rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .wiki-search-kbd { display: none; }
+    .wiki-search-input { padding-right: 1rem; }
+    .wiki-search-result { grid-template-columns: auto 1fr; gap: 0.7rem; }
+    .wiki-search-result-type { display: none; }
+}
+
+/* ============ FIL D'ARIANE WIKI ============ */
+.wiki-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0.5rem 0 1.8rem;
+    padding: 0.7rem 1.1rem;
+    background: var(--bg-soft);
+    border-radius: var(--border-radius-sm, 12px);
+    border: 1px dashed rgba(255, 154, 107, 0.2);
+}
+
+.wiki-bc-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color var(--transition);
+}
+
+.wiki-bc-link:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+}
+
+.wiki-bc-current {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.wiki-bc-sep {
+    color: var(--text-muted);
+    opacity: 0.6;
+    margin: 0 0.1rem;
+}
+
+/* ============ ECRAN DE CHARGEMENT WIKI ============ */
+.wiki-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+    color: var(--text-muted);
+    gap: 1rem;
+}
+
+.wiki-loading-spinner {
+    width: 42px;
+    height: 42px;
+    border: 3px solid var(--pastel-cream);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: wiki-spin 0.9s linear infinite;
+}
+
+@keyframes wiki-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============ DETAIL D'UN LIVRE ============ */
+.wiki-book-detail {
+    animation: fade-in 0.3s ease-out;
+}
+
+.wiki-book-header {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2.2rem;
+    align-items: start;
+    padding: 1.8rem;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(255, 154, 107, 0.08);
+    margin-bottom: 2.5rem;
+}
+
+.wiki-book-cover {
+    width: 100%;
+    border-radius: var(--border-radius-sm, 12px);
+    display: block;
+    background-color: var(--pastel-cream);
+}
+
+img.wiki-book-cover {
+    height: auto;
+    object-fit: contain;
+}
+
+div.wiki-book-cover-empty {
+    aspect-ratio: 3 / 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg,
+        var(--pastel-peach) 0%,
+        var(--pastel-cream) 50%,
+        var(--pastel-mint) 100%);
+    color: var(--accent-color);
+}
+
+.dark-mode .wiki-book-cover-empty {
+    background: linear-gradient(135deg,
+        rgba(255, 154, 107, 0.25) 0%,
+        rgba(255, 193, 138, 0.2) 50%,
+        rgba(186, 230, 211, 0.2) 100%);
+    color: var(--accent-color);
+}
+
+.wiki-book-meta h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 2.2rem;
+    color: var(--text-color);
+    margin: 0 0 0.6rem;
+    line-height: 1.2;
+}
+
+.wiki-book-description {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0 0 0.8rem;
+}
+
+.wiki-book-updated {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0 0 0.9rem;
+    font-style: italic;
+}
+
+.wiki-book-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.3rem;
+}
+
+.wiki-book-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-soft);
+    color: var(--text-color);
+    border-radius: var(--border-radius-pill);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.wiki-book-stat-icon {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+/* Badge temps de lecture en etat "calcul en cours" */
+.wiki-reading-time[data-loading] {
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-style: italic;
+    opacity: 0.85;
+}
+
+.wiki-reading-time[data-loading]::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 12a9 9 0 1 1-6.2-8.55'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 12a9 9 0 1 1-6.2-8.55'/></svg>");
+    animation: wiki-spin 0.9s linear infinite;
+}
+
+.wiki-toc-title {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin: 0 0 1.2rem;
+}
+
+.wiki-toc-chapter {
+    margin-bottom: 1.8rem;
+    padding: 1.2rem 1.5rem;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(255, 154, 107, 0.08);
+    box-shadow: var(--card-shadow);
+}
+
+.wiki-toc-chapter-title {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    margin: 0 0 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.wiki-toc-chapter-title::before {
+    content: '📖';
+    font-size: 1.1rem;
+}
+
+.wiki-toc-chapter-desc {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0 0 0.8rem;
+    line-height: 1.5;
+}
+
+.wiki-toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.wiki-toc-list li a {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 0.9rem;
+    color: var(--text-color);
+    text-decoration: none;
+    background: var(--bg-soft);
+    border-radius: 10px;
+    transition: all var(--transition);
+    border-left: 3px solid transparent;
+}
+
+.wiki-toc-list li a::before {
+    content: '→';
+    color: var(--accent-color);
+    margin-right: 0.6rem;
+    opacity: 0.5;
+    transition: all var(--transition);
+}
+
+.wiki-toc-list li a:hover {
+    background: var(--pastel-cream);
+    border-left-color: var(--accent-color);
+    color: var(--accent-deep);
+}
+
+.dark-mode .wiki-toc-list li a:hover {
+    background: rgba(255, 154, 107, 0.12);
+}
+
+.wiki-toc-list li a:hover::before {
+    opacity: 1;
+    transform: translateX(2px);
+}
+
+.wiki-toc-orphan {
+    margin-bottom: 1rem;
+}

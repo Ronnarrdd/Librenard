@@ -1,0 +1,314 @@
+/* ============ BUTTONS (pill) ============ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.8rem;
+    border-radius: var(--border-radius-pill);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(255, 154, 107, 0.35);
+}
+
+.btn-primary:hover {
+    background: var(--accent-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 154, 107, 0.5);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--accent-deep);
+    border: 2px solid var(--accent-soft);
+}
+
+.btn-secondary:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+.btn-link {
+    color: var(--accent-deep);
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: var(--transition);
+}
+
+.btn-link:hover {
+    gap: 0.6rem;
+    color: var(--accent-strong);
+}
+
+
+/* ============ SECTIONS GÉNÉRIQUES (pages intérieures) ============ */
+.page-header {
+    margin: 2rem 0 2.5rem;
+}
+
+.page-header h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 2.8rem;
+    letter-spacing: -1px;
+    color: var(--text-color);
+    margin-bottom: 0.6rem;
+}
+
+.page-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 640px;
+}
+
+.section {
+    background: var(--bg-card);
+    padding: 2.5rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1.5rem;
+    transition: var(--transition);
+}
+
+.section:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.section h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.8rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    letter-spacing: -0.5px;
+}
+
+.section h3 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--accent-deep);
+    margin-bottom: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.section p {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.section ul {
+    list-style: none;
+    margin: 1rem 0;
+}
+
+.section ul li {
+    position: relative;
+    padding-left: 1.8rem;
+    margin-bottom: 0.6rem;
+    color: var(--text-color);
+}
+
+.section ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65rem;
+    width: 8px;
+    height: 8px;
+    background: var(--accent-color);
+    border-radius: 50%;
+}
+
+/* ============ GRID DE CARTES (projets, outils) ============ */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.cards-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.card {
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 160px;
+    height: 160px;
+    background: var(--pastel-peach);
+    border-radius: 50%;
+    opacity: 0.3;
+    filter: blur(30px);
+    pointer-events: none;
+    transition: var(--transition);
+}
+
+.card:nth-child(2n)::before { background: var(--pastel-sun); }
+.card:nth-child(3n)::before { background: var(--pastel-coral); }
+
+.dark-mode .card::before {
+    opacity: 0.12;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.card:hover::before {
+    opacity: 0.5;
+    transform: scale(1.2);
+}
+
+.dark-mode .card:hover::before {
+    opacity: 0.2;
+}
+
+.card-image {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    background: linear-gradient(135deg, var(--pastel-cream), var(--pastel-peach));
+    border-radius: var(--border-radius);
+    padding: 0.8rem;
+    box-shadow: 0 6px 14px rgba(255, 154, 107, 0.15);
+    position: relative;
+    z-index: 2;
+}
+
+.dark-mode .card-image {
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+}
+
+.card h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--text-color);
+    margin: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.card p {
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.card-details {
+    background: var(--bg-soft);
+    padding: 1.2rem 1.5rem;
+    border-radius: var(--border-radius);
+    margin-top: 0.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.dark-mode .card-details {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.card-details h3 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--accent-deep);
+    margin-bottom: 0.6rem;
+}
+
+.card-details ul {
+    list-style: none;
+}
+
+.card-details li {
+    position: relative;
+    padding-left: 1.4rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.card-details li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-color);
+    border-radius: 50%;
+}
+
+.card-footer {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+
+/* ============ CTA SECTION (bas de page) ============ */
+.cta-section {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: var(--bg-hero);
+    border-radius: var(--border-radius-lg);
+    margin: 2rem 0;
+}
+
+.cta-section h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 2rem;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+}
+
+
+/* ============ LIENS INLINE ============ */
+.section p a, .card p a, .hero p a {
+    color: var(--accent-deep);
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid var(--accent-soft);
+    transition: var(--transition);
+}
+
+.section p a:hover, .card p a:hover, .hero p a:hover {
+    color: var(--accent-strong);
+    border-bottom-color: var(--accent-color);
+}
+

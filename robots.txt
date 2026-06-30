@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://librenard.fr/site/sitemap.xml

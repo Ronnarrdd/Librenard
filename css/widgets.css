@@ -1,0 +1,135 @@
+/* ============ BOUTON POLICE DYSLEXIE ============ */
+.dyslexic-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 9rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--accent-deep);
+    border: 3px solid var(--bg-page);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.5px;
+    box-shadow: var(--card-shadow);
+    z-index: 99;
+    transition: all var(--transition);
+    line-height: 1;
+}
+
+.dark-mode .dyslexic-toggle {
+    background: var(--bg-card);
+    color: var(--accent-color);
+}
+
+.dyslexic-toggle:hover {
+    transform: translateY(-3px);
+    background: var(--accent-color);
+    color: #fff;
+    box-shadow: var(--card-shadow-hover);
+}
+
+.dyslexic-toggle.active {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.dyslexic-toggle.active::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    width: 14px;
+    height: 14px;
+    background: var(--pastel-mint);
+    border: 2px solid var(--bg-page);
+    border-radius: 50%;
+}
+
+
+/* ============ SCROLL ANIMATIONS ============ */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ============ THEME TOGGLE ============ */
+.theme-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--accent-color);
+    border: 3px solid var(--bg-page);
+    border-radius: 50%;
+    width: 54px;
+    height: 54px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: 0 8px 20px rgba(255, 154, 107, 0.35);
+    transition: var(--transition);
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1) rotate(20deg);
+    background: var(--accent-strong);
+    box-shadow: 0 12px 28px rgba(255, 154, 107, 0.5);
+}
+
+/* ============ BACK TO TOP ============ */
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 5.5rem;
+    background: #fff;
+    color: var(--accent-deep);
+    border: 3px solid var(--bg-page);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(255, 154, 107, 0.25);
+    transition: var(--transition);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+}
+
+.dark-mode .back-to-top {
+    background: var(--bg-card);
+    color: var(--accent-color);
+    border-color: var(--bg-page);
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.back-to-top:hover {
+    background: var(--accent-color);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(255, 154, 107, 0.45);
+}
+

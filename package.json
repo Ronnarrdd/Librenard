@@ -1,0 +1,12 @@
+{
+  "name": "librenard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "check:links:external": "node scripts/check-links.mjs --external",
+    "verify": "npm run build && npm run check:links"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "Librenard",
+  "short_name": "Librenard",
+  "description": "Librenard — le site d'un technicien informatique passionné de logiciels libres, d'auto-hébergement et de partage de connaissances.",
+  "lang": "fr",
+  "start_url": "/site/",
+  "scope": "/site/",
+  "display": "standalone",
+  "background_color": "#fef6ec",
+  "theme_color": "#ff9a6b",
+  "icons": [
+    {
+      "src": "/site/images/renard.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/site/images/renard3d.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any"
+    }
+  ]
+}

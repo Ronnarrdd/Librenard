@@ -1,0 +1,182 @@
+/* ============ HERO (style Life. : split gauche/droite) ============ */
+.hero {
+    background: var(--bg-hero);
+    border-radius: var(--border-radius-lg);
+    padding: 4rem 3.5rem;
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 280px;
+    height: 280px;
+    background: var(--pastel-apricot);
+    border-radius: 50%;
+    opacity: 0.4;
+    filter: blur(40px);
+    pointer-events: none;
+}
+
+.dark-mode .hero::before {
+    opacity: 0.15;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 3.5rem;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+}
+
+.hero h1 .accent {
+    color: var(--accent-deep);
+}
+
+.hero p {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    line-height: 1.7;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.hero-illustration {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-illustration img {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+    filter: drop-shadow(0 20px 40px rgba(255, 154, 107, 0.3));
+    animation: bob 5s ease-in-out infinite;
+}
+
+@keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50%      { transform: translateY(-12px) rotate(2deg); }
+}
+
+/* ============ FEATURES GRID (3 cartes sous le hero, style Life. steps) ============ */
+.features {
+    margin-top: 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.feature-card {
+    background: var(--bg-feature);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    transition: var(--transition);
+    border: 1px solid rgba(255, 154, 107, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+    background: var(--bg-card);
+}
+
+.feature-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.3rem;
+    transition: var(--transition);
+}
+
+.feature-card:hover .feature-icon {
+    transform: rotate(-6deg) scale(1.05);
+}
+
+.feature-icon-peach {
+    background: var(--pastel-peach);
+    color: var(--accent-deep);
+    box-shadow: 0 6px 14px rgba(255, 216, 190, 0.6);
+}
+
+.feature-icon-coral {
+    background: var(--pastel-coral);
+    color: #a83e1a;
+    box-shadow: 0 6px 14px rgba(255, 184, 160, 0.6);
+}
+
+.feature-icon-mint {
+    background: var(--pastel-mint);
+    color: #2f7a5c;
+    box-shadow: 0 6px 14px rgba(212, 240, 224, 0.7);
+}
+
+.dark-mode .feature-icon-peach {
+    background: rgba(255, 216, 190, 0.15);
+    color: var(--accent-color);
+}
+
+.dark-mode .feature-icon-coral {
+    background: rgba(255, 184, 160, 0.15);
+    color: var(--accent-color);
+}
+
+.dark-mode .feature-icon-mint {
+    background: rgba(180, 230, 210, 0.12);
+    color: #9fdcc2;
+}
+
+.feature-card h3 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.feature-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+}
+
+.feature-card .btn-link {
+    margin-top: 0.8rem;
+    font-size: 0.95rem;
+}
+

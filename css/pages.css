@@ -1,0 +1,109 @@
+/* ============ CONTACT SPECIFIC ============ */
+.contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.contact-email,
+.contact-linkedin {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.02rem;
+    padding: 0.7rem 1.3rem;
+    border-radius: var(--border-radius-pill);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.contact-email {
+    color: #fff;
+    background: var(--accent-color);
+    box-shadow: 0 6px 16px rgba(255, 154, 107, 0.35);
+}
+
+.contact-email:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(255, 154, 107, 0.5);
+    background: var(--accent-strong);
+}
+
+.contact-linkedin {
+    color: var(--accent-deep);
+    background: var(--bg-card);
+    border: 2px solid var(--accent-soft);
+    box-shadow: var(--card-shadow);
+}
+
+.contact-linkedin:hover {
+    transform: translateY(-2px);
+    color: #fff;
+    background: #0a66c2; /* couleur officielle LinkedIn, reservee au hover pour rester dans la palette du site */
+    border-color: #0a66c2;
+    box-shadow: 0 10px 22px rgba(10, 102, 194, 0.35);
+}
+
+.dark-mode .contact-linkedin {
+    background: var(--bg-card);
+    border-color: var(--accent-soft);
+}
+
+.credit-attribution {
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed rgba(255, 154, 107, 0.22);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+}
+
+.credit-attribution strong {
+    color: var(--text-color);
+}
+
+.license-badge {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background: var(--accent-deep);
+    color: #fff;
+    border-radius: var(--border-radius-pill);
+    font-family: 'Nunito', monospace;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-top: 1rem;
+    box-shadow: 0 6px 14px rgba(210, 90, 46, 0.3);
+}
+
+
+/* ============ PAGE 404 ============ */
+.error-hero {
+    min-height: 60vh;
+}
+
+.error-code {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 5rem;
+    line-height: 1;
+    color: var(--accent-color);
+    margin: 0 0 0.5rem;
+    letter-spacing: -3px;
+    opacity: 0.9;
+    text-shadow: 0 6px 20px rgba(255, 154, 107, 0.3);
+}
+
+.renard-lost {
+    animation: wobble 3s ease-in-out infinite;
+}
+
+@keyframes wobble {
+    0%, 100% { transform: translateY(0) rotate(-8deg); }
+    25%      { transform: translateY(-6px) rotate(4deg); }
+    50%      { transform: translateY(-12px) rotate(-6deg); }
+    75%      { transform: translateY(-4px) rotate(8deg); }
+}
+

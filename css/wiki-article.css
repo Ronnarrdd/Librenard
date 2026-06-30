@@ -1,0 +1,844 @@
+/* ============ LECTURE D'UN ARTICLE ============ */
+.wiki-article-layout {
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+.wiki-toc-slot {
+    display: none;
+}
+
+@media (min-width: 1100px) {
+    .wiki-article-layout.has-toc {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 780px);
+        gap: 3rem;
+        max-width: 1080px;
+        /* Pas d'align-items: la cellule s'etire a la hauteur de l'article,
+           ce qui donne a la sidebar sticky la marge necessaire pour suivre le scroll. */
+    }
+    .wiki-article-layout.has-toc .wiki-toc-slot {
+        display: block;
+    }
+}
+
+.wiki-toc-sidebar {
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    padding: 0.25rem 0 1rem;
+    animation: fade-in 0.3s ease-out;
+}
+
+.wiki-toc-side-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 0.75rem 0.95rem;
+    font-weight: 600;
+}
+
+.wiki-toc-side-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 2px solid rgba(255, 154, 107, 0.22);
+}
+
+.wiki-toc-side-item {
+    margin: 0;
+}
+
+.wiki-toc-side-item a {
+    display: block;
+    padding: 0.4rem 0.9rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    border-left: 2px solid transparent;
+    margin-left: -2px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    word-break: break-word;
+}
+
+.wiki-toc-side-item a:hover {
+    color: var(--accent-deep);
+    background: var(--bg-soft);
+}
+
+.wiki-toc-side-item a.active {
+    color: var(--accent-deep);
+    border-left-color: var(--accent-color);
+    font-weight: 600;
+    background: var(--bg-soft);
+}
+
+.wiki-toc-side-level-3 a {
+    padding-left: 1.8rem;
+    font-size: 0.85rem;
+}
+
+.wiki-article {
+    animation: fade-in 0.3s ease-out;
+    max-width: 780px;
+    margin: 0 auto;
+    min-width: 0;
+}
+
+.wiki-article-layout.has-toc .wiki-article {
+    margin: 0;
+}
+
+/* Les titres ancres ne doivent pas passer sous la navbar sticky */
+.wiki-article-body :is(h1, h2, h3, h4, h5, h6) {
+    scroll-margin-top: 100px;
+}
+
+.wiki-article-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px dashed rgba(255, 154, 107, 0.25);
+}
+
+.wiki-article-header h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 2.4rem;
+    line-height: 1.2;
+    color: var(--text-color);
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.wiki-article-meta {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+    font-style: italic;
+}
+
+.wiki-reading-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-style: normal;
+    padding: 0.15rem 0.7rem;
+    background: var(--bg-soft);
+    color: var(--accent-deep);
+    border-radius: var(--border-radius-pill);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.wiki-reading-time::before {
+    content: "";
+    display: inline-block;
+    width: 14px; height: 14px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>") center/contain no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>") center/contain no-repeat;
+}
+
+/* Barre de progression de lecture (fixe en haut, sous la navbar) */
+.reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 200;
+    background: transparent;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+
+.reading-progress.active {
+    opacity: 1;
+}
+
+.reading-progress-fill {
+    height: 100%;
+    transform-origin: left center;
+    transform: scaleX(0);
+    background: linear-gradient(90deg,
+        var(--accent-color) 0%,
+        var(--accent-deep) 100%);
+    box-shadow: 0 0 10px rgba(255, 154, 107, 0.45);
+    transition: transform 0.08s linear;
+    will-change: transform;
+}
+
+.wiki-article-body {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text-color);
+    /* Contient les floats sans casser le wrap autour des images */
+    display: flow-root;
+}
+
+.wiki-article-body > *:first-child { margin-top: 0; }
+.wiki-article-body > *:last-child  { margin-bottom: 0; }
+
+.wiki-article-body h1,
+.wiki-article-body h2,
+.wiki-article-body h3,
+.wiki-article-body h4,
+.wiki-article-body h5,
+.wiki-article-body h6 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    color: var(--text-color);
+    line-height: 1.3;
+    margin: 2rem 0 0.8rem;
+}
+
+.wiki-article-body h1 { font-size: 1.9rem; }
+.wiki-article-body h2 {
+    font-size: 1.55rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid rgba(255, 154, 107, 0.2);
+}
+.wiki-article-body h3 { font-size: 1.3rem; color: var(--accent-deep); }
+.wiki-article-body h4 { font-size: 1.12rem; }
+.wiki-article-body h5,
+.wiki-article-body h6 { font-size: 1rem; }
+
+.wiki-article-body p {
+    margin: 0 0 1.1rem;
+}
+
+.wiki-article-body a {
+    color: var(--accent-color);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(255, 154, 107, 0.35);
+    transition: all var(--transition);
+}
+
+.wiki-article-body a:hover {
+    color: var(--accent-deep);
+    text-decoration-color: var(--accent-color);
+}
+
+.wiki-article-body ul,
+.wiki-article-body ol {
+    margin: 0 0 1.2rem;
+    padding-left: 1.5rem;
+}
+
+.wiki-article-body li {
+    margin-bottom: 0.4rem;
+}
+
+.wiki-article-body ul li::marker {
+    color: var(--accent-color);
+}
+
+.wiki-article-body img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Respecter le placement Bookstack (float, centrage, figures) */
+.wiki-article-body .align-left,
+.wiki-article-body img.align-left {
+    float: left;
+    margin: 0.5rem 1.2rem 0.8rem 0;
+    max-width: 50%;
+}
+
+.wiki-article-body .align-right,
+.wiki-article-body img.align-right {
+    float: right;
+    margin: 0.5rem 0 0.8rem 1.2rem;
+    max-width: 50%;
+}
+
+.wiki-article-body .align-center,
+.wiki-article-body img.align-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.wiki-article-body figure {
+    margin: 1.2rem 0;
+}
+
+.wiki-article-body figure img {
+    display: block;
+}
+
+.wiki-article-body figcaption {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 0.4rem;
+    font-style: italic;
+}
+
+
+.wiki-article-body blockquote {
+    margin: 1.4rem 0;
+    padding: 0.9rem 1.4rem;
+    border-left: 4px solid var(--accent-color);
+    background: var(--bg-soft);
+    border-radius: 0 10px 10px 0;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.wiki-article-body blockquote p:last-child { margin-bottom: 0; }
+
+.wiki-article-body code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.92em;
+    background: var(--bg-soft);
+    padding: 0.15em 0.4em;
+    border-radius: 5px;
+    color: var(--accent-deep);
+    border: 1px solid rgba(255, 154, 107, 0.15);
+}
+
+.dark-mode .wiki-article-body code {
+    color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* En mode sombre, on force la couleur des titres pour neutraliser
+   d'eventuels styles inline noirs injectes par l'editeur Bookstack (TinyMCE).
+   Sans ca, un "<h2 style='color:#000'>" ou un "<span style='color:#000'>" dans
+   le titre reste illisible sur fond sombre. */
+.dark-mode .wiki-article-body :is(h1, h2, h3, h4, h5, h6),
+.dark-mode .wiki-article-body :is(h1, h2, h3, h4, h5, h6) * {
+    color: var(--text-color) !important;
+}
+
+.dark-mode .wiki-article-body h3,
+.dark-mode .wiki-article-body h3 * {
+    color: var(--accent-color) !important;
+}
+
+.wiki-article-body pre {
+    position: relative;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9rem;
+    background: #1e1e2e;
+    color: #f5f5f5;
+    /* padding-top reserve a l'icone terminal et au bouton Copier */
+    padding: 1.9rem 1.3rem 1.1rem;
+    border-radius: var(--border-radius-sm, 12px);
+    overflow-x: auto;
+    margin: 1.3rem 0;
+    line-height: 1.5;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: var(--card-shadow);
+}
+
+.wiki-article-body pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+/* highlight.js applique son propre fond via .hljs : on le neutralise pour
+   conserver le <pre> existant (meme rendu en mode clair et sombre). */
+.wiki-article-body pre code.hljs {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+/* Icone "terminal" en haut a gauche de tous les blocs de code, signature
+   visuelle qui les distingue immediatement du texte courant. */
+.wiki-article-body pre::before {
+    content: '';
+    position: absolute;
+    top: 0.7rem;
+    left: 0.9rem;
+    width: 14px;
+    height: 14px;
+    background-color: rgba(245, 245, 245, 0.55);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='4 17 10 11 4 5'/><line x1='12' y1='19' x2='20' y2='19'/></svg>") center/contain no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='4 17 10 11 4 5'/><line x1='12' y1='19' x2='20' y2='19'/></svg>") center/contain no-repeat;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Etiquette de langage, injectee via data-language par wiki-feed.js apres
+   colorisation. Affichee a droite de l'icone terminal, discrete mais lisible. */
+.wiki-article-body pre[data-language]::after {
+    content: attr(data-language);
+    position: absolute;
+    top: 0.55rem;
+    left: 2rem;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(245, 245, 245, 0.5);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Bouton "Copier" : discret au repos, pleinement visible au survol du <pre>,
+   ou au focus clavier du bouton. */
+.wiki-article-body pre .wiki-copy-btn {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.55rem;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(245, 245, 245, 0.8);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.wiki-article-body pre:hover .wiki-copy-btn,
+.wiki-article-body pre:focus-within .wiki-copy-btn,
+.wiki-article-body pre .wiki-copy-btn:focus-visible {
+    opacity: 1;
+}
+
+.wiki-article-body pre .wiki-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.wiki-article-body pre .wiki-copy-btn:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.wiki-article-body pre .wiki-copy-btn.copied {
+    opacity: 1;
+    color: #9cffb4;
+    background: rgba(80, 200, 120, 0.15);
+    border-color: rgba(80, 200, 120, 0.35);
+}
+
+.wiki-article-body pre .wiki-copy-btn.error {
+    opacity: 1;
+    color: #ffb4b4;
+    background: rgba(255, 107, 107, 0.15);
+    border-color: rgba(255, 107, 107, 0.35);
+}
+
+.wiki-article-body pre .wiki-copy-icon {
+    flex-shrink: 0;
+}
+
+/* ===================== Lightbox images ===================== */
+
+/* Indique visuellement qu'une image est cliquable (zoomable) */
+.wiki-article-body img.wiki-zoomable {
+    cursor: zoom-in;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wiki-article-body img.wiki-zoomable:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.wiki-article-body img.wiki-zoomable:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 3px;
+}
+
+/* Overlay plein ecran. Cree a la demande par wiki-feed.js. */
+.wiki-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.92);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    cursor: zoom-out;
+    padding: 2rem;
+}
+
+.wiki-lightbox.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.wiki-lightbox-img {
+    max-width: 92vw;
+    max-height: 92vh;
+    object-fit: contain;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+    border-radius: 6px;
+    cursor: default;
+    transform: scale(0.96);
+    transition: transform 0.25s ease;
+}
+
+.wiki-lightbox.active .wiki-lightbox-img {
+    transform: scale(1);
+}
+
+.wiki-lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.wiki-lightbox-close:hover,
+.wiki-lightbox-close:focus-visible {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.35);
+    transform: scale(1.05);
+}
+
+.wiki-lightbox-close:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Empeche le scroll du document sous-jacent pendant l'affichage de la lightbox.
+   Applique sur <html> (pas sur body) pour couvrir iOS correctement. */
+html.wiki-lightbox-open {
+    overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wiki-lightbox,
+    .wiki-lightbox-img,
+    .wiki-lightbox-close,
+    .wiki-article-body img.wiki-zoomable {
+        transition: none;
+    }
+    .wiki-lightbox-img {
+        transform: none;
+    }
+}
+
+/* ===================== Permaliennes sur les titres ===================== */
+
+/* L'ancre "#" se loge a gauche du titre, invisible par defaut, revelee au
+   survol ou au focus du titre ou de l'ancre elle-meme. */
+.wiki-article-body :is(h2, h3) {
+    position: relative;
+    scroll-margin-top: 90px; /* laisse respirer sous la navbar lors d'un deep-link */
+}
+
+.wiki-article-body :is(h2, h3) .wiki-heading-anchor {
+    display: inline-block;
+    margin-left: -1.2em;
+    padding-right: 0.3em;
+    width: 1.2em;
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.wiki-article-body :is(h2, h3):hover .wiki-heading-anchor,
+.wiki-article-body :is(h2, h3):focus-within .wiki-heading-anchor,
+.wiki-article-body .wiki-heading-anchor:focus-visible {
+    opacity: 0.7;
+}
+
+.wiki-article-body .wiki-heading-anchor:hover {
+    opacity: 1 !important;
+    text-decoration: underline;
+}
+
+.wiki-article-body .wiki-heading-anchor:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
+/* Feedback "Lien copié !" apres clic sur l'ancre */
+.wiki-article-body .wiki-heading-anchor::after {
+    content: 'Lien copié !';
+    position: absolute;
+    left: 0;
+    top: -1.9rem;
+    white-space: nowrap;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: 'Nunito', system-ui, sans-serif;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: var(--accent-color);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    pointer-events: none;
+}
+
+.wiki-article-body .wiki-heading-anchor.copied {
+    opacity: 1 !important;
+}
+
+.wiki-article-body .wiki-heading-anchor.copied::after {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Sur ecrans etroits, l'ancre remontee a -1.2em disparait hors du cadre.
+   On la passe en flux inline avec un espace discret. */
+@media (max-width: 720px) {
+    .wiki-article-body :is(h2, h3) .wiki-heading-anchor {
+        margin-left: 0;
+        padding-right: 0.25em;
+        width: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wiki-article-body .wiki-heading-anchor,
+    .wiki-article-body .wiki-heading-anchor::after {
+        transition: none;
+    }
+}
+
+.wiki-article-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.3rem 0;
+    border-radius: var(--border-radius-sm, 12px);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    background: var(--bg-card);
+}
+
+.wiki-article-body thead {
+    background: var(--pastel-cream);
+}
+
+.dark-mode .wiki-article-body thead {
+    background: rgba(255, 154, 107, 0.12);
+}
+
+.wiki-article-body th,
+.wiki-article-body td {
+    padding: 0.7rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 154, 107, 0.12);
+}
+
+.wiki-article-body th {
+    font-weight: 700;
+    color: var(--accent-deep);
+}
+
+.wiki-article-body tr:last-child td {
+    border-bottom: none;
+}
+
+.wiki-article-body hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 154, 107, 0.3), transparent);
+    margin: 2rem 0;
+}
+
+/* ===================== Callouts Bookstack =====================
+   Quatre variantes : info (ampoule), success (check), warning (triangle
+   d'avertissement), danger (octogone rouge). L'icone coloree est placee
+   a gauche du contenu, la bordure gauche reprend la teinte thematique.
+   Fonctionne aussi bien avec <p class="callout"> qu'avec <div class="callout">. */
+.wiki-article-body .callout {
+    position: relative;
+    padding: 1.05rem 1.3rem 1.05rem 3.6rem;
+    border-radius: var(--border-radius-sm, 12px);
+    margin: 1.4rem 0;
+    border: 1px solid transparent;
+    border-left-width: 4px;
+    background: var(--bg-soft);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.wiki-article-body .callout::before {
+    content: '';
+    position: absolute;
+    top: 1rem;
+    left: 1.05rem;
+    width: 22px;
+    height: 22px;
+    background-color: currentColor;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+            mask-position: center;
+            mask-repeat: no-repeat;
+            mask-size: contain;
+}
+
+.wiki-article-body .callout p:last-child { margin-bottom: 0; }
+
+/* Info : ampoule bleue */
+.wiki-article-body .callout.info {
+    color: #2c8fe6;
+    border-color: #4dabf7;
+    background: rgba(77, 171, 247, 0.08);
+}
+.wiki-article-body .callout.info::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 18h6'/><path d='M10 22h4'/><path d='M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8a6 6 0 0 0-12 0c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M9 18h6'/><path d='M10 22h4'/><path d='M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8a6 6 0 0 0-12 0c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14'/></svg>");
+}
+
+/* Success : coche verte */
+.wiki-article-body .callout.success {
+    color: #2fa84d;
+    border-color: #51cf66;
+    background: rgba(81, 207, 102, 0.08);
+}
+.wiki-article-body .callout.success::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+}
+
+/* Warning : triangle d'avertissement orange */
+.wiki-article-body .callout.warning {
+    color: #e08a2b;
+    border-color: #ffa94d;
+    background: rgba(255, 169, 77, 0.1);
+}
+.wiki-article-body .callout.warning::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg>");
+}
+
+/* Danger : octogone rouge "stop" */
+.wiki-article-body .callout.danger {
+    color: #e74c3c;
+    border-color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.08);
+}
+.wiki-article-body .callout.danger::before {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2'/><line x1='12' y1='8' x2='12' y2='12'/><line x1='12' y1='16' x2='12.01' y2='16'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2'/><line x1='12' y1='8' x2='12' y2='12'/><line x1='12' y1='16' x2='12.01' y2='16'/></svg>");
+}
+
+/* Le texte du callout reprend la couleur normale du corps de l'article :
+   seule l'icone (et la bordure) gardent la couleur thematique. */
+.wiki-article-body .callout > *,
+.wiki-article-body .callout p,
+.wiki-article-body .callout li {
+    color: var(--text-color);
+}
+
+/* Mode sombre : fonds legerement plus opaques pour rester lisibles sur le
+   fond brun, et icones plus contrastees. */
+.dark-mode .wiki-article-body .callout.info    { background: rgba(77, 171, 247, 0.14); }
+.dark-mode .wiki-article-body .callout.success { background: rgba(81, 207, 102, 0.14); }
+.dark-mode .wiki-article-body .callout.warning { background: rgba(255, 169, 77, 0.16); }
+.dark-mode .wiki-article-body .callout.danger  { background: rgba(255, 107, 107, 0.14); }
+
+.dark-mode .wiki-article-body .callout.info    { color: #6ec1ff; }
+.dark-mode .wiki-article-body .callout.success { color: #74e08a; }
+.dark-mode .wiki-article-body .callout.warning { color: #ffc078; }
+.dark-mode .wiki-article-body .callout.danger  { color: #ff8585; }
+
+/* Sur mobile : on garde l'icone mais on resserre un peu pour ne pas
+   sacrifier trop de largeur de lecture. */
+@media (max-width: 540px) {
+    .wiki-article-body .callout {
+        padding: 0.95rem 1rem 0.95rem 2.9rem;
+    }
+    .wiki-article-body .callout::before {
+        top: 0.95rem;
+        left: 0.85rem;
+        width: 19px;
+        height: 19px;
+    }
+}
+
+/* Navigation prev/next sous un article */
+.wiki-article-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 2px dashed rgba(255, 154, 107, 0.25);
+}
+
+.wiki-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1rem 1.3rem;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    color: inherit;
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(255, 154, 107, 0.1);
+    transition: all var(--transition);
+}
+
+.wiki-nav-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--accent-color);
+}
+
+.wiki-nav-next { text-align: right; }
+
+.wiki-nav-dir {
+    font-size: 0.8rem;
+    color: var(--accent-color);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.wiki-nav-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+

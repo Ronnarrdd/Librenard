@@ -1,0 +1,14 @@
+/* Librenard - feuille de style principale.
+   Decoupee en partials thematiques pour rester maintenable.
+   L'ordre est important : la cascade va du plus generique
+   (base, layout) vers le plus specifique (pages, responsive). */
+
+@import url('base.css');
+@import url('layout.css');
+@import url('components.css');
+@import url('home.css');
+@import url('wiki.css');
+@import url('wiki-article.css');
+@import url('widgets.css');
+@import url('pages.css');
+@import url('responsive.css');

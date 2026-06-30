@@ -1,0 +1,90 @@
+/* Respect du reglage systeme "reduire les animations".
+   On coupe animations, transitions et scroll smooth pour les personnes
+   sensibles au mouvement (vertige, troubles vestibulaires, etc.). */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+:root {
+    /* Light Mode - Palette orange pêche crème très douce */
+    --bg-page:        #fef6ec;        /* crème chaude */
+    --bg-soft:        #fdeedd;        /* abricot très pâle */
+    --bg-card:        #ffffff;
+    --bg-hero:        #fff1e0;        /* pêche crème (fond hero, type Life.) */
+    --bg-feature:     #fff7ec;        /* cartes features en bas */
+
+    --text-color:     #3d2a1a;        /* brun chaud, lisible, doux */
+    --text-muted:     #8a6f58;
+
+    --accent-color:   #ff9a6b;        /* pêche moyen, cute + pro */
+    --accent-soft:    #ffdcc5;        /* pêche très pâle (fond de bouton secondaire) */
+    --accent-strong:  #f07a4c;        /* pour hover */
+    --accent-deep:    #d25a2e;        /* terracotta pour éléments de marque */
+
+    --pastel-peach:   #ffd8be;
+    --pastel-apricot: #ffcfa3;
+    --pastel-cream:   #fff3e0;
+    --pastel-sun:     #ffe4b5;
+    --pastel-coral:   #ffb8a0;
+    --pastel-mint:    #d4f0e0;        /* légère touche verte pour respirer */
+
+    --nav-bg:         rgba(255, 255, 255, 0.88);
+    --card-shadow:        0 4px 20px rgba(255, 154, 107, 0.08);
+    --card-shadow-hover:  0 14px 35px rgba(255, 154, 107, 0.18);
+
+    --border-radius-sm:   12px;
+    --border-radius:      18px;
+    --border-radius-lg:   28px;
+    --border-radius-pill: 999px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --container-width: 1180px;
+}
+
+/* Dark Mode */
+.dark-mode {
+    --bg-page:    #1f1813;
+    --bg-soft:    #2a1f17;
+    --bg-card:    #2d241c;
+    --bg-hero:    #2a1f17;
+    --bg-feature: #261d16;
+
+    --text-color: #fdeedd;
+    --text-muted: #c9a98a;
+
+    --accent-color:   #ffab84;
+    --accent-soft:    #4a3324;
+    --accent-strong:  #ffc7a6;
+    --accent-deep:    #ff9a6b;
+
+    --nav-bg:     rgba(45, 36, 28, 0.9);
+    --card-shadow:       0 4px 20px rgba(0, 0, 0, 0.35);
+    --card-shadow-hover: 0 14px 35px rgba(0, 0, 0, 0.5);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-color);
+    font-family: 'Nunito', 'Comic Neue', system-ui, sans-serif;
+    font-weight: 500;
+    line-height: 1.65;
+    min-height: 100vh;
+    font-size: 1rem;
+    transition: background-color 0.4s ease, color 0.3s ease;
+    overflow-x: hidden;
+}

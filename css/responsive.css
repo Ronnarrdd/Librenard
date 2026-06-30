@@ -1,0 +1,144 @@
+/* ============ RESPONSIVE ============ */
+@media (max-width: 960px) {
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 3rem 2rem;
+        text-align: center;
+        gap: 2rem;
+    }
+
+    .hero p { margin-left: auto; margin-right: auto; }
+
+    .hero-actions { justify-content: center; }
+
+    .hero-illustration { order: -1; }
+
+    .hero-illustration img { max-width: 240px; }
+
+    .features {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cards-grid,
+    .cards-grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .wiki-feed-list {
+        grid-template-columns: 1fr;
+    }
+
+    .books-grid {
+        grid-template-columns: 1fr;
+        gap: 1.4rem;
+    }
+
+    .wiki-book-header {
+        grid-template-columns: 1fr;
+        gap: 1.3rem;
+        padding: 1.3rem;
+    }
+
+    .wiki-book-cover {
+        max-width: 240px;
+        margin: 0 auto;
+    }
+
+    .wiki-book-meta h1 {
+        font-size: 1.7rem;
+        text-align: center;
+    }
+
+    .wiki-book-description,
+    .wiki-book-updated {
+        text-align: center;
+    }
+
+    .wiki-article-header h1 { font-size: 1.8rem; }
+    .wiki-article-body { font-size: 1rem; }
+    .wiki-article-body h1 { font-size: 1.5rem; }
+    .wiki-article-body h2 { font-size: 1.3rem; }
+    .wiki-article-body h3 { font-size: 1.15rem; }
+
+    .wiki-article-nav {
+        grid-template-columns: 1fr;
+    }
+
+    .wiki-nav-next { text-align: left; }
+
+    .wiki-breadcrumb {
+        font-size: 0.88rem;
+        padding: 0.6rem 0.9rem;
+    }
+}
+
+@media (max-width: 680px) {
+    .navbar-inner {
+        padding: 1rem 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .burger-menu { display: block; }
+
+    .navbar-links {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.4rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 154, 107, 0.15);
+    }
+
+    .navbar-links.active { display: flex; }
+
+    .navbar-links a { text-align: center; }
+
+    .page { padding: 1rem; }
+
+    .hero {
+        padding: 2.5rem 1.5rem;
+        border-radius: var(--border-radius);
+    }
+
+    .hero h1 { font-size: 2.3rem; }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+
+    .section, .card {
+        padding: 1.75rem;
+        border-radius: var(--border-radius);
+    }
+
+    .page-header h1 { font-size: 2rem; }
+
+    .theme-toggle {
+        bottom: 1rem;
+        right: 1rem;
+        width: 46px;
+        height: 46px;
+        font-size: 1.1rem;
+    }
+
+    .back-to-top {
+        bottom: 4.2rem;
+        right: 1rem;
+        width: 42px;
+        height: 42px;
+    }
+
+    .dyslexic-toggle {
+        bottom: 7.4rem;
+        right: 1rem;
+        width: 42px;
+        height: 42px;
+        font-size: 0.95rem;
+    }
+
+    .error-code {
+        font-size: 3.5rem;
+    }
+}
