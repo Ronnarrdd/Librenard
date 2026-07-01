@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { formatContent } from './lib/format-html.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -164,20 +165,6 @@ function indent(text, spaces = 4) {
         .join('\n');
 }
 
-function dedent(text) {
-    const trimmed = text.trim();
-    const indents = trimmed
-        .split('\n')
-        .filter(line => line.trim())
-        .map(line => line.match(/^\s*/)[0].length);
-    const minIndent = indents.length ? Math.min(...indents) : 0;
-
-    return trimmed
-        .split('\n')
-        .map(line => line.slice(Math.min(minIndent, line.match(/^\s*/)[0].length)))
-        .join('\n');
-}
-
 function escapeXml(value) {
     return String(value)
         .replaceAll('&', '&amp;')
@@ -291,7 +278,7 @@ function extractPageContent(html) {
     const mainMatch = html.match(/<main class="page" id="main-content">([\s\S]*?)<\/main>/);
     if (!mainMatch) throw new Error('Balise <main class="page" id="main-content"> introuvable.');
 
-    return dedent(mainMatch[1]
+    return formatContent(mainMatch[1]
         .replace(/\n\s*<footer class="footer">[\s\S]*?<\/footer>\s*/m, '\n')
     );
 }

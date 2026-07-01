@@ -7,6 +7,10 @@
     "build": "node scripts/build-site.mjs",
     "check:links": "node scripts/check-links.mjs",
     "check:links:external": "node scripts/check-links.mjs --external",
-    "verify": "npm run build && npm run check:links"
+    "test": "node --test",
+    "verify": "npm run test && npm run build && npm run check:links"
+  },
+  "devDependencies": {
+    "js-beautify": "^2.0.3"
   }
 }
