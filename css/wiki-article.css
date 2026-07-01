@@ -226,6 +226,53 @@
     text-decoration-color: var(--accent-color);
 }
 
+/* ===================== Boutons-liens Bookstack =====================
+   Bookstack fabrique ses "boutons" via des liens <a> a styles inline
+   (display:inline-block; padding; background-color; color; text-decoration:none;).
+   Ces styles inline priment sur `.wiki-article-body a`, mais ils ne definissent
+   ni arrondi, ni ombre, ni survol : le rendu est donc un rectangle plat qui jure
+   avec les boutons pilule du site. On complete ici uniquement les proprietes
+   absentes de l'inline (border-radius, box-shadow, transition, survol), sans
+   ecraser les couleurs choisies par l'auteur.
+   Heuristique : un lien d'article porteur d'un `background-color` inline. */
+.wiki-article-body a[style*="background-color"] {
+    border-radius: var(--border-radius-pill);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                filter 0.25s ease;
+}
+
+.wiki-article-body a[style*="background-color"]:hover,
+.wiki-article-body a[style*="background-color"]:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 22px rgba(0, 0, 0, 0.2);
+    filter: brightness(1.07);
+    /* L'inline `text-decoration:none` prime deja, mais on le reaffirme au cas ou
+       l'auteur aurait omis la propriete sur un bouton. */
+    text-decoration: none;
+}
+
+.wiki-article-body a[style*="background-color"]:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 3px;
+}
+
+/* Conteneur d'une rangee de boutons : on le passe en flex pour un espacement
+   regulier et un retour a la ligne propre sur mobile (sinon les liens
+   inline-block se collent avec un simple espace insecable). Cible uniquement
+   les conteneurs centres QUI contiennent un bouton, pour ne pas perturber les
+   images centrees qui partagent la classe `.align-center`. */
+.wiki-article-body .align-center:has(> a[style*="background-color"]) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+}
+
 .wiki-article-body ul,
 .wiki-article-body ol {
     margin: 0 0 1.2rem;
