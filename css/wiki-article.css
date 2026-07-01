@@ -339,6 +339,8 @@
     border-radius: 0 10px 10px 0;
     color: var(--text-muted);
     font-style: italic;
+    /* BFC : evite que le fond ne passe sous une image flottante voisine. */
+    display: flow-root;
 }
 
 .wiki-article-body blockquote p:last-child { margin-bottom: 0; }
@@ -386,6 +388,10 @@
     line-height: 1.5;
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: var(--card-shadow);
+    /* `overflow-x: auto` etablit deja un BFC : le bloc ne se glisse pas
+       sous une image flottante voisine. On force `clear: both` en plus pour
+       aerer la mise en page : un bloc de code merite sa propre ligne. */
+    clear: both;
 }
 
 .wiki-article-body pre code {
@@ -739,6 +745,10 @@ html.wiki-lightbox-open {
     border-left-width: 4px;
     background: var(--bg-soft);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    /* Sans BFC, le fond colore du callout s'etend sous une image
+       `.align-left`/`.align-right` voisine. `flow-root` place le callout
+       a cote du flottant (retreci si necessaire) au lieu de dessous. */
+    display: flow-root;
 }
 
 .wiki-article-body .callout::before {
@@ -834,6 +844,14 @@ html.wiki-lightbox-open {
         left: 0.85rem;
         width: 19px;
         height: 19px;
+    }
+    /* Sur ecrans etroits, le callout et la citation deviennent illisibles
+       s'ils sont serres contre une image flottante (l'icone + le padding
+       gauche ne laissent presque rien pour le texte). On les passe sous
+       l'image en clearant les flottants. */
+    .wiki-article-body .callout,
+    .wiki-article-body blockquote {
+        clear: both;
     }
 }
 
