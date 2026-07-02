@@ -34,8 +34,9 @@ function setDyslexicMode(enabled, { save = true } = {}) {
 }
 
 function createDyslexicToggle() {
-    // N'affiche le bouton que sur les pages ayant une section wiki interactive
-    if (!document.getElementById('wiki-view')) return;
+    // N'affiche le bouton que sur les surfaces de lecture du wiki :
+    // section interactive (SPA) ou article prerendu au build.
+    if (!document.getElementById('wiki-view') && !document.querySelector('.wiki-article-body')) return;
     if (document.getElementById('dyslexic-toggle')) return;
 
     const btn = document.createElement('button');

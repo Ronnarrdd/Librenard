@@ -2,29 +2,15 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { formatContent } from './lib/format-html.mjs';
+import { site, withBasePath, prefixFor, renderDocument, escapeXml, fallbackAttr } from './lib/site-template.mjs';
+import { prerenderWiki, bookCardStaticHtml } from './lib/wiki-prerender.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
 
-const site = {
-    url: 'https://librenard.fr',
-    basePath: '/site',
-    name: 'Librenard',
-    author: 'Nolann',
-    ogImage: 'https://librenard.fr/site/renard.png',
-    description: "Librenard — le site d'un technicien informatique passionné de logiciels libres, d'auto-hébergement et de partage de connaissances."
-};
-
-const navItems = [
-    { href: 'index.html', key: 'accueil', label: 'Accueil' },
-    { href: 'projets.html', key: 'projets', label: 'Projets' },
-    { href: 'wiki.html', key: 'wiki', label: 'Wiki' },
-    { href: 'outils.html', key: 'outils', label: 'Outils' },
-    { href: 'contact.html', key: 'contact', label: 'Contact' },
-    { href: 'a-propos.html', key: 'a-propos', label: 'À propos' }
-];
-
-const defaultFontHref = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap';
+// --no-wiki : saute le prerendu Bookstack (build hors ligne). Le sitemap
+// reutilise alors le manifest genere par le dernier prerendu.
+const skipWiki = process.argv.includes('--no-wiki');
 
 const pages = [
     {
@@ -136,18 +122,6 @@ const pages = [
     }
 ];
 
-function prefixFor(output) {
-    const depth = output.split('/').length - 1;
-    return depth ? '../'.repeat(depth) : '';
-}
-
-function withBasePath(urlPath) {
-    const basePath = site.basePath.replace(/\/$/, '');
-    if (!basePath) return urlPath;
-    if (urlPath === '/') return `${basePath}/`;
-    return `${basePath}${urlPath.startsWith('/') ? urlPath : `/${urlPath}`}`;
-}
-
 function publicPath(output) {
     if (output === 'index.html') return withBasePath('/');
     return withBasePath(`/${output.replace(/^error\/404\.html$/, '404.html')}`);
@@ -155,123 +129,6 @@ function publicPath(output) {
 
 function absoluteUrl(output, page) {
     return `${site.url}${page.ogPath ? withBasePath(page.ogPath) : publicPath(output)}`;
-}
-
-function indent(text, spaces = 4) {
-    const pad = ' '.repeat(spaces);
-    return text
-        .split('\n')
-        .map(line => (line ? `${pad}${line}` : line))
-        .join('\n');
-}
-
-function escapeXml(value) {
-    return String(value)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&apos;');
-}
-
-function renderThemeInit() {
-    return `<script>
-        (function() {
-            try {
-                var saved = localStorage.getItem('theme');
-                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (saved === 'dark' || (!saved && prefersDark)) {
-                    document.documentElement.classList.add('dark-mode');
-                }
-            } catch (e) {}
-        })();
-    </script>`;
-}
-
-function renderHead(page, prefix) {
-    const canonical = absoluteUrl(page.output, page);
-    const fontHref = page.fontHref || defaultFontHref;
-    const cssFallback = page.fallbackPrefix
-        ? `<link rel="stylesheet" href="${page.fallbackPrefix}css/style.css">`
-        : '';
-    const meta = [
-        '<meta charset="UTF-8">',
-        '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
-        renderThemeInit(),
-        `<meta name="description" content="${page.description}">`,
-        page.keywords ? `<meta name="keywords" content="${page.keywords}">` : '',
-        `<meta name="author" content="${site.author}">`,
-        page.noindex ? '<meta name="robots" content="noindex">' : '',
-        `<link rel="canonical" href="${canonical}">`,
-        '<meta property="og:type" content="website">',
-        `<meta property="og:url" content="${canonical}">`,
-        `<meta property="og:title" content="${page.ogTitle || page.title}">`,
-        `<meta property="og:description" content="${page.ogDescription || page.description}">`,
-        `<meta property="og:image" content="${site.ogImage}">`,
-        '<meta property="og:locale" content="fr_FR">',
-        '<meta name="twitter:card" content="summary_large_image">',
-        `<meta name="twitter:title" content="${page.twitterTitle || page.ogTitle || page.title}">`,
-        `<meta name="twitter:description" content="${page.twitterDescription || page.ogDescription || page.description}">`,
-        `<meta name="twitter:image" content="${site.ogImage}">`,
-        '<meta name="theme-color" content="#ff9a6b" media="(prefers-color-scheme: light)">',
-        '<meta name="theme-color" content="#1f1813" media="(prefers-color-scheme: dark)">',
-        '<meta name="apple-mobile-web-app-capable" content="yes">',
-        '<meta name="apple-mobile-web-app-title" content="Librenard">',
-        `<link rel="manifest" href="${prefix}site.webmanifest">`,
-        `<link rel="icon" type="image/webp" href="${prefix}images/renard.webp">`,
-        '<link rel="preconnect" href="https://fonts.googleapis.com">',
-        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
-        `<link href="${fontHref}" rel="stylesheet">`,
-        `<link rel="stylesheet" href="${prefix}css/style.css">`,
-        cssFallback,
-        `<title>${page.title}</title>`
-    ].filter(Boolean);
-
-    return `<head>\n${indent(meta.join('\n'), 4)}\n</head>`;
-}
-
-function fallbackAttr(page, target) {
-    if (!page.fallbackPrefix) return '';
-    return ` onerror="this.onerror=null;this.src='${page.fallbackPrefix}${target}'"`;
-}
-
-function renderNav(activeKey, prefix, page = {}) {
-    const links = navItems.map(item => {
-        const active = item.key === activeKey ? ' class="active"' : '';
-        return `<li><a href="${prefix}${item.href}" data-nav="${item.key}"${active}>${item.label}</a></li>`;
-    }).join('\n');
-
-    return `<a class="skip-link" href="#main-content">Aller au contenu</a>
-<nav class="navbar">
-    <div class="navbar-inner">
-        <a href="${prefix}index.html" class="navbar-brand">
-            <img src="${prefix}images/renard.webp" alt="Librenard"${fallbackAttr(page, 'images/renard.webp')}>
-            <span>Librenard</span>
-        </a>
-        <button class="burger-menu" aria-label="Menu" aria-expanded="false">☰</button>
-        <ul class="navbar-links">
-${indent(links, 12)}
-        </ul>
-    </div>
-</nav>`;
-}
-
-function renderFooter() {
-    return `<footer class="footer">
-    <p>Sous licence <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.fr" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>.</p>
-</footer>`;
-}
-
-function renderScripts(page, prefix) {
-    return page.scripts
-        .map(script => {
-            const type = script.type ? ` type="${script.type}"` : '';
-            const fallback = page.fallbackPrefix
-                ? ` onerror="var s=document.createElement('script');s.src='${page.fallbackPrefix}${script.src}';document.body.appendChild(s);"`
-                : '';
-            return `<script${type} src="${prefix}${script.src}"${fallback}></script>`;
-        })
-        .join('\n');
 }
 
 function extractPageContent(html) {
@@ -301,60 +158,92 @@ function normalizePageContent(content, page) {
         });
 }
 
-async function renderPage(page) {
-    const filePath = path.join(rootDir, page.output);
-    const currentHtml = await readFile(filePath, 'utf8');
-    const content = normalizePageContent(extractPageContent(currentHtml), page);
-    const prefix = page.assetPrefix ?? prefixFor(page.output);
-    const bodyDataPage = page.navKey ? ` data-page="${page.navKey}"` : '';
-    const scripts = renderScripts(page, prefix);
-
-    return `<!DOCTYPE html>
-<!-- Generated by scripts/build-site.mjs. Edit page-specific content in this file, then run npm run build. -->
-<html lang="fr">
-${renderHead(page, prefix)}
-<body${bodyDataPage}>
-${indent(renderNav(page.navKey, prefix, page), 4)}
-
-    <main class="page" id="main-content">
-${indent(content, 8)}
-
-${indent(renderFooter(), 8)}
-    </main>
-
-${indent(scripts, 4)}
-</body>
-</html>
-`;
+// Remplace le contenu de la <section id="wiki-view"> par la grille de livres
+// prerendue : liens reels crawlables + contenu visible sans JS. Le SPA
+// reprend la main au chargement (il re-rend la meme grille en routage hash).
+// IMPORTANT : #wiki-view doit etre une <section> ne contenant aucune autre
+// section (la regex non-greedy s'arrete au premier </section> rencontre).
+function injectWikiGrid(content, books, output) {
+    const grid = `<div class="books-grid">\n${books.map(bookCardStaticHtml).join('\n')}\n</div>`;
+    const replaced = content.replace(
+        /(<section id="wiki-view"[^>]*>)[\s\S]*?(<\/section>)/,
+        `$1\n${grid}\n$2`
+    );
+    if (replaced === content) throw new Error(`Section #wiki-view introuvable dans ${output}.`);
+    return replaced;
 }
 
-async function buildPages() {
+// Etagere Bookstack affichee par chaque page (doit correspondre a
+// l'attribut data-shelf du #wiki-view de la page).
+const pageShelves = {
+    'wiki.html': 'ressources-references',
+    'projets.html': 'projets'
+};
+
+async function renderPage(page, booksByShelf) {
+    const filePath = path.join(rootDir, page.output);
+    const currentHtml = await readFile(filePath, 'utf8');
+    let content = normalizePageContent(extractPageContent(currentHtml), page);
+    const shelfSlug = pageShelves[page.output];
+    if (shelfSlug && booksByShelf?.[shelfSlug]) {
+        content = formatContent(injectWikiGrid(content, booksByShelf[shelfSlug], page.output));
+    }
+    const prefix = page.assetPrefix ?? prefixFor(page.output);
+
+    return renderDocument({
+        page: { ...page, canonicalUrl: absoluteUrl(page.output, page) },
+        prefix,
+        content,
+        generatorComment: 'Generated by scripts/build-site.mjs. Edit page-specific content in this file, then run npm run build.'
+    });
+}
+
+async function buildPages(booksByShelf) {
     for (const page of pages) {
-        const html = await renderPage(page);
+        const html = await renderPage(page, booksByShelf);
         await writeFile(path.join(rootDir, page.output), html, 'utf8');
         console.log(`Generated ${page.output}`);
     }
 }
 
-async function buildSitemap() {
+async function loadWikiSitemapEntries() {
+    try {
+        const manifest = await readFile(path.join(rootDir, 'wiki', 'sitemap-manifest.json'), 'utf8');
+        return JSON.parse(manifest);
+    } catch (_) {
+        console.warn('Pas de manifest wiki (wiki/sitemap-manifest.json) : sitemap sans les pages du wiki.');
+        return [];
+    }
+}
+
+async function buildSitemap(wikiEntries) {
     const lastmod = new Date().toISOString().slice(0, 10);
-    const entries = pages
-        .filter(page => !page.noindex)
-        .map(page => `    <url>
-        <loc>${escapeXml(absoluteUrl(page.output, page))}</loc>
-        <lastmod>${lastmod}</lastmod>
-        <changefreq>${page.changefreq}</changefreq>
-        <priority>${page.priority}</priority>
-    </url>`)
-        .join('\n');
+    const entries = [
+        ...pages
+            .filter(page => !page.noindex)
+            .map(page => ({
+                loc: absoluteUrl(page.output, page),
+                lastmod,
+                changefreq: page.changefreq,
+                priority: page.priority
+            })),
+        ...wikiEntries
+    ];
+
+    const xml = entries.map(entry => `    <url>
+        <loc>${escapeXml(entry.loc)}</loc>
+        <lastmod>${entry.lastmod}</lastmod>
+        <changefreq>${entry.changefreq}</changefreq>
+        <priority>${entry.priority}</priority>
+    </url>`).join('\n');
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${entries}
+${xml}
 </urlset>
 `;
     await writeFile(path.join(rootDir, 'sitemap.xml'), sitemap, 'utf8');
-    console.log('Generated sitemap.xml');
+    console.log(`Generated sitemap.xml (${entries.length} URLs)`);
 }
 
 async function buildRobots() {
@@ -398,7 +287,18 @@ async function buildManifest() {
     console.log('Generated site.webmanifest');
 }
 
-await buildPages();
-await buildSitemap();
+let booksByShelf = null;
+let wikiEntries;
+if (skipWiki) {
+    console.log('Prerendu wiki saute (--no-wiki).');
+    wikiEntries = await loadWikiSitemapEntries();
+} else {
+    const result = await prerenderWiki(rootDir);
+    booksByShelf = result.booksByShelf;
+    wikiEntries = result.sitemapEntries;
+}
+
+await buildPages(booksByShelf);
+await buildSitemap(wikiEntries);
 await buildRobots();
 await buildManifest();

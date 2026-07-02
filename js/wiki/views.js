@@ -3,7 +3,7 @@
 
 import { getBookBySlug, getPage, getVisibleBooks, flattenPages } from './api.js';
 import { escapeHtml, formatRelativeDate, rewriteWikiLinks } from './helpers.js';
-import { canonicalUrl, updateMeta, resetMeta, stripHtmlToText, DEFAULT_META } from './meta.js';
+import { staticWikiUrl, updateMeta, resetMeta, stripHtmlToText, DEFAULT_META } from './meta.js';
 import {
     highlightArticleCode,
     buildToc,
@@ -152,11 +152,12 @@ export async function viewBook(view, slug) {
     `;
     renderBreadcrumb([{ text: book.name }]);
 
-    // Meta dynamiques pour la page livre
+    // Meta dynamiques pour la page livre. L'URL canonique est la page
+    // statique prerendue equivalente (les routes hash ne sont pas indexables).
     updateMeta({
         title:       `${book.name} — Wiki Librenard`,
         description: book.description || DEFAULT_META.description,
-        url:         canonicalUrl(),
+        url:         staticWikiUrl(book.slug),
         image:       (book.cover && book.cover.url) || DEFAULT_META.ogImage,
         type:        'website'
     });
@@ -264,7 +265,7 @@ export async function viewPage(view, bookSlug, pageSlug, sectionSlug = null) {
     updateMeta({
         title:       `${page.name} — ${book.name} | Wiki Librenard`,
         description: pageDescription || book.description || DEFAULT_META.description,
-        url:         canonicalUrl(),
+        url:         staticWikiUrl(book.slug, page.slug),
         image:       (book.cover && book.cover.url) || DEFAULT_META.ogImage,
         type:        'article'
     });

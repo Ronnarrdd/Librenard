@@ -1,0 +1,644 @@
+[
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux.html",
+    "lastmod": "2026-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/introduction-a-linux-origines-et-developpement.html",
+    "lastmod": "2024-04-23",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/introduction-aux-distributions-linux.html",
+    "lastmod": "2026-04-24",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/preparation-a-linstallation.html",
+    "lastmod": "2024-04-02",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/notre-premiere-installation-dubuntu.html",
+    "lastmod": "2024-04-02",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/premiers-pas-dans-les-commandes-linux-navigation.html",
+    "lastmod": "2024-04-02",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/le-systeme-de-fichiers-linux.html",
+    "lastmod": "2024-04-02",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/partitionnement-dun-disque-sous-linux.html",
+    "lastmod": "2024-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/premiers-pas-dans-les-commandes-linux-commandes-de-base.html",
+    "lastmod": "2024-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/premiers-pas-dans-les-commandes-linux-gestion-des-paquets-sous-ubuntu.html",
+    "lastmod": "2024-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/premiers-pas-dans-les-commandes-linux-gestion-des-services-avec-systemd.html",
+    "lastmod": "2024-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/les-differents-environnement-de-bureau-graphique-linux.html",
+    "lastmod": "2024-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/premiers-pas-dans-les-commandes-linux-concepts-de-securite-sous-linux.html",
+    "lastmod": "2024-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/fondamentaux-de-la-configuration-reseau-sous-linux.html",
+    "lastmod": "2026-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bases-de-linux/le-chargeur-damorcage-grub.html",
+    "lastmod": "2024-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/systeme-de-fichier-windows.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/systeme-de-fichier-windows/lediteur-de-registre.html",
+    "lastmod": "2026-04-28",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/systeme-de-fichier-windows/la-racine-du-disque-c.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/systeme-de-fichier-windows/le-dossier-utilisateurs.html",
+    "lastmod": "2026-04-28",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/systeme-de-fichier-windows/le-dossier-windows.html",
+    "lastmod": "2024-06-04",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bios-et-uefi.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bios-et-uefi/quest-ce-que-le-bios-et-luefi.html",
+    "lastmod": "2024-06-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bios-et-uefi/mbr-master-boot-record.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bios-et-uefi/gpt-guid-partition-table.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bios-et-uefi/cmos-complementary-metal-oxide-semiconductor.html",
+    "lastmod": "2024-06-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bios-et-uefi/mise-a-jour-du-bios.html",
+    "lastmod": "2024-06-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/introduction-aux-adresses-ip.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/introduction-aux-adresses-ip/quest-ce-quune-adresse-ip.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/introduction-aux-adresses-ip/comment-fonctionnent-les-adresses-ip.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/introduction-aux-adresses-ip/le-masque-de-sous-reseau-netmask.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/introduction-aux-adresses-ip/serveurs-dhcp-dynamic-host-configuration-protocol.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/introduction-aux-adresses-ip/serveurs-dns-domain-name-system.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/introduction-aux-adresses-ip/le-modele-osi-open-systems-interconnection.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/le-raid.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/le-raid/types-de-raid.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/le-raid/configuration-et-gestion-du-raid.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/le-raid/avantages-et-inconvenients.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/le-raid/disques-de-rechange-et-hotswap-en-raid.html",
+    "lastmod": "2024-06-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/le-raid/les-limites-du-raid-comment-le-raid-peut-vous-trahir.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/restaurer-la-partition-efi-sur-windows-1011.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/restaurer-la-partition-efi-sur-windows-1011/quest-ce-que-la-partition-efi.html",
+    "lastmod": "2024-06-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/restaurer-la-partition-efi-sur-windows-1011/etape-1-utilisation-de-loutil-de-redemarrage-systeme.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/restaurer-la-partition-efi-sur-windows-1011/etape-2-reparation-avec-linvite-de-commande.html",
+    "lastmod": "2024-06-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/restaurer-la-partition-efi-sur-windows-1011/au-cas-ou-la-partition-efi-nexiste-plus.html",
+    "lastmod": "2024-06-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/restaurer-la-partition-efi-sur-windows-1011/comment-endommager-intentionnellement-la-partition-efi.html",
+    "lastmod": "2024-06-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/utilisation-de-diskpart-dans-windows.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/utilisation-de-diskpart-dans-windows/quest-ce-que-diskpart.html",
+    "lastmod": "2024-06-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/utilisation-de-diskpart-dans-windows/difference-entre-disque-volume-et-partition.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/utilisation-de-diskpart-dans-windows/comment-acceder-a-diskpart.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/utilisation-de-diskpart-dans-windows/commandes-de-base-de-diskpart.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/utilisation-de-diskpart-dans-windows/exemples-pratiques.html",
+    "lastmod": "2024-03-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/bazar.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-docker-sur-linux.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-docker-sur-linux/quest-ce-que-docker.html",
+    "lastmod": "2024-04-03",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-docker-sur-linux/installation-de-docker-sur-linux.html",
+    "lastmod": "2024-04-03",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-docker-sur-linux/comprendre-les-images-et-les-conteneurs.html",
+    "lastmod": "2026-07-01",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-docker-sur-linux/comprendre-les-ports-docker.html",
+    "lastmod": "2026-07-01",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-docker-sur-linux/docker-compose-a-quoi-ca-sert.html",
+    "lastmod": "2026-07-01",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/lordinateur-ne-sallume-pas.html",
+    "lastmod": "2024-05-02",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/les-reseaux-wi-fi-ne-saffichent-pas.html",
+    "lastmod": "2024-04-29",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/impossible-dafficher-le-gestionnaire-des-taches.html",
+    "lastmod": "2024-04-29",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/lecran-ne-sallume-plus.html",
+    "lastmod": "2024-04-29",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/mon-ordinateur-est-en-surchauffe.html",
+    "lastmod": "2024-04-29",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/impossible-dacceder-a-un-site.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/mon-systeme-dexploitation-ne-se-lance-plus-mais-lordi-est-allume.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/mon-windows-nest-pas-active.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/mon-claviersouris-ne-fonctionne-plus.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/mon-ordinateur-est-tres-lent.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/mon-ordinateur-ne-charge-plus.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/mon-disque-dur-nest-plus-afficheexploitable.html",
+    "lastmod": "2024-05-02",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/le-pave-tactile-ne-fonctionne-plus.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/limprimante-ne-fonctionne-plusnest-pas-reconnue.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/aucun-son-ne-sort-des-hauts-parleurs.html",
+    "lastmod": "2024-05-02",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/recuperation-dun-fichier-supprime-par-inadvertance.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/trop-de-programmes-se-lancent-au-demarrage.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/glpi-exemple-de-pannes/je-suis-envahi-par-les-pages-publicitaires.html",
+    "lastmod": "2024-04-30",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-glpi-sous-debian.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-glpi-sous-debian/installation-de-debian.html",
+    "lastmod": "2024-05-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-glpi-sous-debian/installation-des-prerequis-pour-glpi.html",
+    "lastmod": "2024-05-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-glpi-sous-debian/installation-de-glpi.html",
+    "lastmod": "2024-05-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-glpi-sous-debian/installation-du-plugin-glpi-inventory.html",
+    "lastmod": "2024-05-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/installation-de-centreon.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/installation-de-centreon/installation-de-almalinux.html",
+    "lastmod": "2026-04-26",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/installation-de-centreon/installation-de-centreon.html",
+    "lastmod": "2026-04-26",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/installation-de-centreon/ajout-dun-hote-sous-windows.html",
+    "lastmod": "2026-04-26",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/notions-reseau.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/notions-reseau/les-enregistrements-dns.html",
+    "lastmod": "2025-02-21",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/notions-reseau/quest-ce-quune-dmz.html",
+    "lastmod": "2025-02-21",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/notions-reseau/comprendre-radius.html",
+    "lastmod": "2025-02-21",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/notions-reseau/la-fibre-optique-comprendre-ftth-fttb-et-fttx.html",
+    "lastmod": "2025-02-25",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-beszel.html",
+    "lastmod": "2026-06-28",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-beszel/quest-ce-que-beszel.html",
+    "lastmod": "2026-06-28",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-beszel/installation-de-beszel.html",
+    "lastmod": "2026-06-28",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-de-beszel/utilisation-de-beszel.html",
+    "lastmod": "2026-06-28",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-de-place-duptime-kuma.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-de-place-duptime-kuma/quest-ce-que-uptime-kuma.html",
+    "lastmod": "2025-01-27",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-de-place-duptime-kuma/installation-duptime-kuma.html",
+    "lastmod": "2025-01-27",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-de-place-duptime-kuma/configurer-des-sondes-dans-uptime-kuma.html",
+    "lastmod": "2026-04-22",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-dune-synchronisation-zabbix-uptime-kuma.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-dune-synchronisation-zabbix-uptime-kuma/contexte-et-objectif.html",
+    "lastmod": "2025-01-27",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-dune-synchronisation-zabbix-uptime-kuma/preparatifs.html",
+    "lastmod": "2025-01-28",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/mise-en-place-dune-synchronisation-zabbix-uptime-kuma/mise-en-service.html",
+    "lastmod": "2025-01-27",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/scanner-et-trier-des-documents-avec-une-telecommande-philips-hue.html",
+    "lastmod": "2026-04-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/scanner-et-trier-des-documents-avec-une-telecommande-philips-hue/scanner-dune-simple-pression.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/scanner-et-trier-des-documents-avec-une-telecommande-philips-hue/preparer-le-nid.html",
+    "lastmod": "2026-04-05",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  },
+  {
+    "loc": "https://librenard.fr/site/wiki/scanner-et-trier-des-documents-avec-une-telecommande-philips-hue/le-script-de-numerisation.html",
+    "lastmod": "2026-04-06",
+    "changefreq": "monthly",
+    "priority": "0.7"
+  }
+]

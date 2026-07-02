@@ -19,6 +19,7 @@ export const DEFAULT_META = {};
 export function snapshotDefaultMeta() {
     if (DEFAULT_META.title) return;
     DEFAULT_META.title          = document.title;
+    DEFAULT_META.canonical      = document.querySelector('link[rel="canonical"]')?.href || '';
     DEFAULT_META.description    = getMetaContent('name',     'description');
     DEFAULT_META.ogType         = getMetaContent('property', 'og:type') || 'website';
     DEFAULT_META.ogUrl          = getMetaContent('property', 'og:url') || location.href;
@@ -66,12 +67,34 @@ export function canonicalUrl() {
     return `${location.origin}${location.pathname}${location.hash}`;
 }
 
+// URL de la page statique prerendue (scripts/lib/wiki-prerender.mjs)
+// correspondant a un livre ou un article. C'est l'URL canonique du contenu :
+// les routes hash du SPA ne sont pas des URLs distinctes pour les moteurs.
+export function staticWikiUrl(bookSlug, pageSlug) {
+    const staticPath = pageSlug
+        ? `wiki/${encodeURIComponent(bookSlug)}/${encodeURIComponent(pageSlug)}.html`
+        : `wiki/${encodeURIComponent(bookSlug)}.html`;
+    return new URL(staticPath, `${location.origin}${location.pathname}`).href;
+}
+
+function setCanonical(url) {
+    if (!url) return;
+    let el = document.querySelector('link[rel="canonical"]');
+    if (!el) {
+        el = document.createElement('link');
+        el.setAttribute('rel', 'canonical');
+        document.head.appendChild(el);
+    }
+    el.setAttribute('href', url);
+}
+
 // API unique : update des titres + descriptions + OG + Twitter d'un seul coup.
 export function updateMeta({ title, description, url, image, type = 'website' }) {
     if (title)       document.title = title;
     if (description) setMetaContent('name',     'description',         description);
     setMetaContent('property', 'og:type', type);
     setMetaContent('property', 'og:url',  url || canonicalUrl());
+    setCanonical(url);
     if (title)       setMetaContent('property', 'og:title',            title);
     if (description) setMetaContent('property', 'og:description',      description);
     if (image)       setMetaContent('property', 'og:image',            image);
@@ -84,7 +107,7 @@ export function resetMeta() {
     updateMeta({
         title:       DEFAULT_META.title,
         description: DEFAULT_META.description,
-        url:         canonicalUrl(),
+        url:         DEFAULT_META.canonical || canonicalUrl(),
         image:       DEFAULT_META.ogImage,
         type:        DEFAULT_META.ogType || 'website'
     });

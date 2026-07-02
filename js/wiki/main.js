@@ -55,8 +55,15 @@ async function router() {
     // Coupe la barre de progression si on quitte un article
     stopReadingProgress();
 
-    renderLoading(view);
     const state = parseHash();
+
+    // La grille de livres est prerendue au build dans le HTML (SEO + no-JS).
+    // Sur la vue liste, on la laisse affichee pendant le fetch au lieu d'un
+    // ecran de chargement : pas de flash, et elle sert de repli si l'API tombe.
+    const hasStaticGrid = Boolean(view.querySelector('.book-card:not(.book-card-skeleton)'));
+    if (!(state.name === 'list' && hasStaticGrid)) {
+        renderLoading(view);
+    }
 
     // Elements a masquer en mode lecture (livre/article) : page-header, cartes, intros...
     // Convention : ajouter la classe .wiki-hide-in-view sur les elements concernes.
@@ -81,6 +88,11 @@ async function router() {
         }
     } catch (err) {
         console.error('[wiki]', err);
+        if (state.name === 'list' && hasStaticGrid) {
+            // La grille prerendue est toujours a l'ecran et ses liens (pages
+            // statiques) fonctionnent sans l'API : on la garde telle quelle.
+            return;
+        }
         view.innerHTML = `
             <p class="wiki-empty">
                 Oups, impossible de charger ce contenu&nbsp;: ${escapeHtml(err.message)}.<br>

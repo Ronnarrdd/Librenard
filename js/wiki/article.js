@@ -370,7 +370,12 @@ export function setupTocObserver(items, container) {
         const link = e.target.closest('[data-toc-link]');
         if (!link || !container.contains(link)) return;
         const targetId = link.getAttribute('href').slice(1);
-        const target = document.getElementById(targetId);
+        // Les TOC prerendues (pages statiques) encodent le href pour que
+        // l'ancre native fonctionne : on decode pour retrouver l'id literal.
+        let target = document.getElementById(targetId);
+        if (!target) {
+            try { target = document.getElementById(decodeURIComponent(targetId)); } catch (_) { /* href malformee */ }
+        }
         if (!target) return;
         e.preventDefault();
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
