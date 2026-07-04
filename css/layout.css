@@ -105,11 +105,28 @@
 /* ============ FOOTER ============ */
 .footer {
     margin-top: 4rem;
-    padding: 2rem;
+    padding: 1.5rem 0 0.25rem;
     text-align: center;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--text-muted);
     border-top: 1px solid rgba(255, 154, 107, 0.15);
+}
+
+.footer p {
+    margin: 0 0 0.35rem;
+}
+
+.footer p:last-child {
+    margin-bottom: 0;
+}
+
+.footer-links {
+    font-weight: 600;
+}
+
+.footer-links span {
+    margin: 0 0.45rem;
+    opacity: 0.45;
 }
 
 .footer a {
@@ -119,7 +136,13 @@
     transition: var(--transition);
 }
 
-.footer a:hover { color: var(--accent-strong); }
+.footer a:hover {
+    color: var(--accent-strong);
+}
+
+.dark-mode .footer a {
+    color: var(--accent-color);
+}
 
 /* ============ SKIP-LINK (accessibilite clavier) ============ */
 .skip-link {

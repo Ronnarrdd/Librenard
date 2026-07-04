@@ -176,9 +176,16 @@ ${indent(links, 12)}
 </nav>`;
 }
 
-export function renderFooter() {
+export function renderFooter(prefix = '') {
     return `<footer class="footer">
-    <p>Sous licence <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.fr" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>.</p>
+    <p class="footer-links">
+        <a href="https://github.com/Ronnarrdd/Librenard" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span aria-hidden="true">·</span>
+        <a href="${prefix}a-propos.html">À propos</a>
+        <span aria-hidden="true">·</span>
+        <a href="${prefix}contact.html">Contact</a>
+    </p>
+    <p class="footer-legal">Sous licence <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.fr" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a> · Aucun cookie, aucun tracking.</p>
 </footer>`;
 }
 
@@ -215,7 +222,7 @@ ${indent(renderNav(page.navKey, prefix, page), 4)}
     <main class="page" id="main-content">
 ${mainContent}
 
-${indent(renderFooter(), 8)}
+${indent(renderFooter(prefix), 8)}
     </main>
 
 ${indent(scripts, 4)}

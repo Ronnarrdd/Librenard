@@ -108,7 +108,7 @@
         grid-template-columns: 1fr;
     }
 
-    .section, .card {
+    .section, .card, .feature-card {
         padding: 1.75rem;
         border-radius: var(--border-radius);
     }
