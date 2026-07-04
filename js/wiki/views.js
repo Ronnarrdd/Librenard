@@ -175,6 +175,10 @@ export async function viewBook(view, slug) {
             if (rtEl && rtEl.isConnected) rtEl.remove();
         });
     }
+
+    // Remonter en haut pour afficher le sommaire (sinon on reste a la position
+    // de scroll de la grille de livres, souvent hors ecran apres le changement de vue).
+    window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
 export async function viewPage(view, bookSlug, pageSlug, sectionSlug = null) {
