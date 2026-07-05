@@ -2,9 +2,9 @@
 # Token BookStack : js/wiki/api.js (surcharge possible via BOOKSTACK_TOKEN en CI).
 
 stages:
-  - test
-  - build
-  - verify
+  - renifler
+  - tisser
+  - patrouille
 
 default:
   image: debian:latest
@@ -34,10 +34,11 @@ variables:
     - npm --version
     - npm ci
 
-# Gate tests — rapide, toutes branches et MR
+# --- Renifler : tests et sécurité des dépendances ---
 
-test:unit:
-  stage: test
+reniflage:
+  name: "🦊 Reniflage — tests unitaires du build"
+  stage: renifler
   extends: .node-setup
   script:
     - npm test
@@ -45,10 +46,22 @@ test:unit:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
 
-# Build du site — wiki complet sur main, hors ligne ailleurs
+vigilance:
+  name: "👀 Vigilance — audit npm des dépendances"
+  stage: renifler
+  extends: .node-setup
+  script:
+    - npm audit --audit-level=high
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
 
-build:site:
-  stage: build
+# --- Tisser : génération du site ---
+
+tissage:
+  name: "🪡 Tissage — build du site (wiki inclus sur main)"
+  stage: tisser
   extends: .node-setup
   script:
     - |
@@ -82,13 +95,56 @@ build:site:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
 
-# Liens internes — déterministe, après build
+# --- Patrouille : vérifications post-build ---
 
-verify:links:
-  stage: verify
+recherche:
+  name: "🔎 Recherche — index Pagefind (wiki offline)"
+  stage: patrouille
+  needs:
+    - job: tissage
+      artifacts: true
+  script:
+    - |
+      if [ ! -f pagefind/pagefind.js ]; then
+        if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
+          echo "Index Pagefind manquant sur main : la recherche wiki offline est cassée."
+          exit 1
+        fi
+        echo "Pas d'index Pagefind (build --no-wiki) : normal sur cette branche."
+        exit 0
+      fi
+      echo "Index Pagefind présent : recherche offline OK."
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+cartographie:
+  name: "🗺️ Cartographie — stats du sitemap"
+  stage: patrouille
+  needs:
+    - job: tissage
+      artifacts: true
+  script:
+    - test -f sitemap.xml
+    - |
+      URL_COUNT=$(grep -c '<url>' sitemap.xml)
+      WIKI_COUNT=$(grep -c '<loc>https://librenard.fr/site/wiki/' sitemap.xml || true)
+      echo "Sitemap : ${URL_COUNT} URLs au total, dont ${WIKI_COUNT} pages wiki."
+      if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ] && [ "$WIKI_COUNT" -lt 50 ]; then
+        echo "Alerte : le sitemap main contient peu de pages wiki (${WIKI_COUNT})."
+        exit 1
+      fi
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+pistes-internes:
+  name: "🐾 Pistes internes — liens du site"
+  stage: patrouille
   extends: .node-setup
   needs:
-    - job: build:site
+    - job: tissage
       artifacts: true
   script:
     - npm run check:links
@@ -96,13 +152,12 @@ verify:links:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
 
-# Liens externes — réseau, plus lent ; manuel sur main ou planifié
-
-verify:links:external:
-  stage: verify
+exploration:
+  name: "🌲 Exploration — liens externes (manuel)"
+  stage: patrouille
   extends: .node-setup
   needs:
-    - job: build:site
+    - job: tissage
       artifacts: true
   script:
     - npm run check:links:external
@@ -110,4 +165,16 @@ verify:links:external:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
+
+planifie:exploration:
+  name: "📅 Exploration planifiée — liens externes (hebdo)"
+  stage: patrouille
+  extends: .node-setup
+  needs:
+    - job: tissage
+      artifacts: true
+  script:
+    - npm run check:links:external
+  allow_failure: true
+  rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
