@@ -1,0 +1,113 @@
+# Pipeline Librenard — runner Docker debian:latest
+# Token BookStack : js/wiki/api.js (surcharge possible via BOOKSTACK_TOKEN en CI).
+
+stages:
+  - test
+  - build
+  - verify
+
+default:
+  image: debian:latest
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+      - .npm/
+
+variables:
+  NODE_MAJOR: "22"
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
+  DEBIAN_FRONTEND: noninteractive
+
+.node-setup:
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq --no-install-recommends ca-certificates curl gnupg
+    - mkdir -p /etc/apt/keyrings
+    - curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+    - echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" > /etc/apt/sources.list.d/nodesource.list
+    - apt-get update -qq
+    - apt-get install -y -qq --no-install-recommends nodejs
+    - node --version
+    - npm --version
+    - npm ci
+
+# Gate tests — rapide, toutes branches et MR
+
+test:unit:
+  stage: test
+  extends: .node-setup
+  script:
+    - npm test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+# Build du site — wiki complet sur main, hors ligne ailleurs
+
+build:site:
+  stage: build
+  extends: .node-setup
+  script:
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
+        echo "Build complet avec prérendu wiki (token dans js/wiki/api.js)."
+        npm run build
+      else
+        echo "Build hors ligne (--no-wiki) : pas d'appel API sur les branches/MR."
+        npm run build -- --no-wiki
+      fi
+  artifacts:
+    expire_in: 2 weeks
+    paths:
+      - index.html
+      - projets.html
+      - wiki.html
+      - outils.html
+      - contact.html
+      - a-propos.html
+      - error/
+      - wiki/
+      - css/
+      - js/
+      - images/
+      - vendor/
+      - pagefind/
+      - sitemap.xml
+      - robots.txt
+      - site.webmanifest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+# Liens internes — déterministe, après build
+
+verify:links:
+  stage: verify
+  extends: .node-setup
+  needs:
+    - job: build:site
+      artifacts: true
+  script:
+    - npm run check:links
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+# Liens externes — réseau, plus lent ; manuel sur main ou planifié
+
+verify:links:external:
+  stage: verify
+  extends: .node-setup
+  needs:
+    - job: build:site
+      artifacts: true
+  script:
+    - npm run check:links:external
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+    - if: $CI_PIPELINE_SOURCE == "schedule"
