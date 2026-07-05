@@ -1,5 +1,6 @@
 # Pipeline Librenard — runner Docker debian:latest
 # Token BookStack : js/wiki/api.js (surcharge possible via BOOKSTACK_TOKEN en CI).
+# Noms des jobs = libellés affichés dans GitLab (pas de clé "name", non supportée ici).
 
 stages:
   - renifler
@@ -36,8 +37,7 @@ variables:
 
 # --- Renifler : tests et sécurité des dépendances ---
 
-reniflage:
-  name: "🦊 Reniflage — tests unitaires du build"
+reniflage-tests-unitaires:
   stage: renifler
   extends: .node-setup
   script:
@@ -46,8 +46,7 @@ reniflage:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
 
-vigilance:
-  name: "👀 Vigilance — audit npm des dépendances"
+vigilance-audit-npm:
   stage: renifler
   extends: .node-setup
   script:
@@ -59,8 +58,7 @@ vigilance:
 
 # --- Tisser : génération du site ---
 
-tissage:
-  name: "🪡 Tissage — build du site (wiki inclus sur main)"
+tissage-build-site:
   stage: tisser
   extends: .node-setup
   script:
@@ -97,11 +95,10 @@ tissage:
 
 # --- Patrouille : vérifications post-build ---
 
-recherche:
-  name: "🔎 Recherche — index Pagefind (wiki offline)"
+recherche-pagefind:
   stage: patrouille
   needs:
-    - job: tissage
+    - job: tissage-build-site
       artifacts: true
   script:
     - |
@@ -118,11 +115,10 @@ recherche:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
 
-cartographie:
-  name: "🗺️ Cartographie — stats du sitemap"
+cartographie-sitemap:
   stage: patrouille
   needs:
-    - job: tissage
+    - job: tissage-build-site
       artifacts: true
   script:
     - test -f sitemap.xml
@@ -139,12 +135,11 @@ cartographie:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
 
-pistes-internes:
-  name: "🐾 Pistes internes — liens du site"
+pistes-internes-liens:
   stage: patrouille
   extends: .node-setup
   needs:
-    - job: tissage
+    - job: tissage-build-site
       artifacts: true
   script:
     - npm run check:links
@@ -152,12 +147,11 @@ pistes-internes:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH
 
-exploration:
-  name: "🌲 Exploration — liens externes (manuel)"
+exploration-liens-externes:
   stage: patrouille
   extends: .node-setup
   needs:
-    - job: tissage
+    - job: tissage-build-site
       artifacts: true
   script:
     - npm run check:links:external
@@ -166,12 +160,11 @@ exploration:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
 
-planifie:exploration:
-  name: "📅 Exploration planifiée — liens externes (hebdo)"
+planifie-exploration-liens:
   stage: patrouille
   extends: .node-setup
   needs:
-    - job: tissage
+    - job: tissage-build-site
       artifacts: true
   script:
     - npm run check:links:external
