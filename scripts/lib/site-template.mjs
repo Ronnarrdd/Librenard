@@ -194,7 +194,7 @@ ${indent(links, 12)}
 export function renderFooter(prefix = '') {
     return `<footer class="footer">
     <p class="footer-links">
-        <a href="https://github.com/Ronnarrdd/Librenard" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://git.librenard.fr/librenard/website" target="_blank" rel="noopener noreferrer">GitLab</a>
         <span aria-hidden="true">·</span>
         <a href="${prefix}a-propos.html">À propos</a>
         <span aria-hidden="true">·</span>
