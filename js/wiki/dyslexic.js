@@ -1,16 +1,17 @@
-// Mode "Police adaptee a la dyslexie" (OpenDyslexic).
+// Mode "Police adaptee a la dyslexie" (OpenDyslexic, hebergee localement).
 // Charge la police a la demande, persiste l'etat dans localStorage,
 // affiche un bouton flottant uniquement quand une zone wiki est presente.
 
+import { assetUrl } from './site-paths.js';
+
 const DYSLEXIC_STORAGE_KEY = 'wiki-dyslexic';
-const DYSLEXIC_FONT_URL    = 'https://fonts.cdnfonts.com/css/opendyslexic';
 
 function loadDyslexicFont() {
     if (document.getElementById('opendyslexic-stylesheet')) return;
     const link = document.createElement('link');
     link.id = 'opendyslexic-stylesheet';
     link.rel = 'stylesheet';
-    link.href = DYSLEXIC_FONT_URL;
+    link.href = assetUrl('vendor/fonts/opendyslexic.css');
     document.head.appendChild(link);
 }
 

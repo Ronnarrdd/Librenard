@@ -1,0 +1,29 @@
+/* Genere par scripts/lib/vendor-assets.mjs */
+@font-face {
+    font-family: 'OpenDyslexic';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../vendor/fonts/OpenDyslexic-Regular.woff') format('woff');
+}
+@font-face {
+    font-family: 'OpenDyslexic';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../vendor/fonts/OpenDyslexic-Bold.woff') format('woff');
+}
+@font-face {
+    font-family: 'OpenDyslexic';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../vendor/fonts/OpenDyslexic-Italic.woff') format('woff');
+}
+@font-face {
+    font-family: 'OpenDyslexic';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../vendor/fonts/OpenDyslexic-BoldItalic.woff') format('woff');
+}

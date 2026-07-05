@@ -16,7 +16,7 @@ import path from 'node:path';
 import { WIKI_CONFIG } from '../../js/wiki/api.js';
 import { escapeHtml } from '../../js/wiki/helpers.js';
 import { formatContent } from './format-html.mjs';
-import { site, withBasePath, prefixFor, renderDocument, escapeAttr } from './site-template.mjs';
+import { site, withBasePath, prefixFor, renderDocument, escapeAttr, renderWikiSearch } from './site-template.mjs';
 import {
     bookOutputPath,
     articleOutputPath,
@@ -27,8 +27,10 @@ import {
     ensureHeadingIds,
     rewriteBookstackLinks
 } from './wiki-static.mjs';
+import { WikiImageMirror } from './wiki-images.mjs';
 
 const API_TOKEN = process.env.BOOKSTACK_TOKEN || WIKI_CONFIG.token;
+const UPLOADS_BASE = `${WIKI_CONFIG.baseUrl.replace(/\/$/, '')}/uploads`;
 const MAX_CONCURRENT_FETCHES = 4;
 const MAX_RETRIES = 3;
 
@@ -223,6 +225,8 @@ function renderArticleDocument(books, book, ref, prevRef, nextRef) {
     const toc = tocSidebarHtml(headings);
     const content = `        ${breadcrumb}
 
+        ${renderWikiSearch()}
+
         <div class="wiki-article-layout${toc ? ' has-toc' : ''}">
             <div class="wiki-toc-slot" id="wiki-toc-slot">${toc}</div>
             <article class="wiki-article">
@@ -247,6 +251,8 @@ ${bodyHtml}
                 canonicalUrl: canonical,
                 ogType: 'article',
                 ogImage: book.cover?.url || site.ogImage,
+                pagefindType: 'Article',
+                pagefindBook: book.name,
                 jsonLd: {
                     '@context': 'https://schema.org',
                     '@type': 'TechArticle',
@@ -308,6 +314,8 @@ function renderBookDocument(books, book) {
 
     const content = `${breadcrumbHtml(prefix, book.shelfRef, [{ text: book.name }])}
 
+        ${renderWikiSearch()}
+
 <article class="wiki-book-detail">
     <header class="wiki-book-header">
         ${coverHtml}
@@ -334,7 +342,11 @@ function renderBookDocument(books, book) {
                 description,
                 canonicalUrl: canonicalFor(output),
                 ogImage: book.cover?.url || site.ogImage,
-                scripts: [{ src: 'js/script.js' }]
+                pagefindType: 'Livre',
+                scripts: [
+                    { src: 'js/script.js' },
+                    { type: 'module', src: 'js/wiki/static-wiki.js' }
+                ]
             },
             prefix,
             // Pas de <pre> dans un sommaire : on peut reindenter proprement.
@@ -378,6 +390,7 @@ export function bookCardStaticHtml(book) {
  */
 export async function prerenderWiki(rootDir) {
     const { books, booksByShelf } = await fetchWikiContent();
+    const imageMirror = new WikiImageMirror(rootDir, UPLOADS_BASE, API_TOKEN);
 
     const documents = [];
     for (const book of books) {
@@ -387,6 +400,20 @@ export async function prerenderWiki(rootDir) {
             const next = i < book.flatPages.length - 1 ? book.flatPages[i + 1] : null;
             documents.push(renderArticleDocument(books, book, ref, prev, next));
         });
+    }
+
+    console.log('Miroir des images BookStack…');
+    for (const doc of documents) {
+        doc.html = await imageMirror.processHtml(doc.html, doc.output);
+    }
+
+    for (const book of books) {
+        if (book.cover?.url?.startsWith(UPLOADS_BASE)) {
+            const mapped = imageMirror.cache.get(book.cover.url);
+            if (mapped) {
+                book.cover.url = imageMirror.absoluteSiteUrl(book.cover.url);
+            }
+        }
     }
 
     // Le dossier wiki/ est entierement possede par le build : on le vide pour

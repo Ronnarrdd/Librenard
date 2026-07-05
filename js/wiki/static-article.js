@@ -9,12 +9,14 @@
 import { highlightArticleCode, startReadingProgress, buildToc, setupTocObserver } from './article.js';
 import { setupImageLightbox } from './lightbox.js';
 import { initDyslexicMode } from './dyslexic.js';
+import { initWikiSearch } from './search.js';
 
 function init() {
     const articleBody = document.querySelector('.wiki-article-body');
     if (!articleBody) return;
 
     initDyslexicMode();
+    initWikiSearch();
     highlightArticleCode(articleBody);
     setupImageLightbox(articleBody);
     startReadingProgress(articleBody);

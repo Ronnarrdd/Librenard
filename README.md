@@ -48,7 +48,12 @@ aux attributs `data-shelf` de `wiki.html` et `projets.html`.
 
 Le dossier `wiki/` est entièrement régénéré à chaque build : ne rien y éditer
 à la main. Le token API est lu depuis la variable d'environnement
-`BOOKSTACK_TOKEN`, à défaut depuis `js/wiki/api.js`.
+`BOOKSTACK_TOKEN` (voir `.env.example`), à défaut depuis `js/wiki/api.js`.
+
+Au build, le site génère aussi :
+- **`pagefind/`** — index de recherche offline (Pagefind) sur les pages wiki statiques
+- **`images/wiki/`** — miroir local des images BookStack (WebP, lazy loading)
+- **`vendor/`** et **`css/fonts.css`** — polices, highlight.js et OpenDyslexic self-hostés (zero CDN au runtime)
 
 ## Licence
 

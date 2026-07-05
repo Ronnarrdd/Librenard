@@ -1,16 +1,49 @@
-// Recherche full-text dans le wiki, via l'API Bookstack.
+// Recherche full-text dans le wiki via l'index Pagefind (genere au build).
 // UI : champ #wiki-search-input + container de resultats #wiki-search-results.
 
-import { apiFetch } from './api.js';
-import { escapeHtml, sanitizeInlineHtml, bookstackUrlToHash } from './helpers.js';
+import { escapeHtml, sanitizeInlineHtml } from './helpers.js';
+import { pagefindModuleUrl, resolveSiteUrl } from './site-paths.js';
+
+let pagefindModule = null;
+
+async function loadPagefind() {
+    if (pagefindModule) return pagefindModule;
+    const url = pagefindModuleUrl();
+    const mod = await import(/* webpackIgnore: true */ url);
+    await mod.init();
+    pagefindModule = mod;
+    return mod;
+}
+
+function inferResultType(data) {
+    const custom = data.meta?.['pagefind:type'];
+    if (custom === 'Livre') return 'book';
+    if (custom === 'Article') return 'page';
+    const path = data.url || '';
+    if (/\/wiki\/[^/]+\/[^/]+\.html/.test(path)) return 'page';
+    if (/\/wiki\/[^/]+\.html/.test(path)) return 'book';
+    return 'page';
+}
 
 async function searchWiki(query) {
     const q = query.trim();
     if (q.length < 2) return [];
-    const json = await apiFetch(`/search?query=${encodeURIComponent(q)}&count=12`);
-    return (json.data || [])
-        .map(r => ({ ...r, hash: bookstackUrlToHash(r.url) }))
-        .filter(r => r.hash); // on ne garde que ce qu'on peut ouvrir dans le SPA
+    const pf = await loadPagefind();
+    const response = await pf.search(q);
+    const slice = (response.results || []).slice(0, 12);
+    return Promise.all(slice.map(async (result) => {
+        const data = await result.data();
+        const title = data.meta?.title || data.meta?.['og:title'] || 'Sans titre';
+        return {
+            name: title,
+            type: inferResultType(data),
+            url: resolveSiteUrl(data.url),
+            preview_html: {
+                name: title,
+                content: data.excerpt || ''
+            }
+        };
+    }));
 }
 
 function searchResultIcon(type) {
@@ -37,14 +70,12 @@ function renderSearchResults(container, items, query) {
         return;
     }
     container.innerHTML = items.map((r, i) => {
-        // preview_html.content contient du HTML deja surligne par Bookstack (<strong>).
-        // On passe par un vrai parseur DOM pour ne garder qu'une liste blanche de balises.
         const rawSnippet = (r.preview_html && r.preview_html.content) || '';
         const safeSnippet = sanitizeInlineHtml(rawSnippet);
         const rawName = (r.preview_html && r.preview_html.name) || escapeHtml(r.name);
         const safeName = sanitizeInlineHtml(rawName);
         return `
-            <a href="${r.hash}" role="option" id="wiki-search-opt-${i}"
+            <a href="${escapeHtml(r.url)}" role="option" id="wiki-search-opt-${i}"
                class="wiki-search-result" data-index="${i}">
                 <span class="wiki-search-result-icon" aria-hidden="true">${searchResultIcon(r.type)}</span>
                 <span class="wiki-search-result-body">
@@ -103,7 +134,7 @@ export function initWikiSearch() {
         } catch (err) {
             if (myReq !== requestSeq) return;
             console.warn('[wiki-search]', err);
-            results.innerHTML = `<p class="wiki-search-empty">Erreur de recherche : ${escapeHtml(err.message)}.</p>`;
+            results.innerHTML = `<p class="wiki-search-empty">Index de recherche indisponible. Lancez <code>npm run build</code> pour le générer.</p>`;
         }
     }
 
@@ -149,20 +180,17 @@ export function initWikiSearch() {
         }
     });
 
-    // Fermeture si clic en dehors
     document.addEventListener('click', (e) => {
         if (!input.contains(e.target) && !results.contains(e.target)) {
             closeResults();
         }
     });
 
-    // Clic sur un resultat : on ferme et on laisse le hashchange se declencher
     results.addEventListener('click', () => {
         closeResults();
         input.blur();
     });
 
-    // Raccourci global "/" pour focus la recherche (hors champs de saisie)
     document.addEventListener('keydown', (e) => {
         if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
         const target = e.target;

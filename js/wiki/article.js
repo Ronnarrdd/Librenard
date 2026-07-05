@@ -8,13 +8,10 @@
 
 import { escapeHtml, slugify } from './helpers.js';
 import { flattenPages, getPage } from './api.js';
+import { assetUrl } from './site-paths.js';
 
-// ---------- COLORISATION SYNTAXIQUE (highlight.js) ----------
+// ---------- COLORISATION SYNTAXIQUE (highlight.js, heberge localement) ----------
 
-const HLJS_VERSION = '11.9.0';
-const HLJS_CDN     = `https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@${HLJS_VERSION}/build`;
-
-// On garde la promesse une fois la lib charge, pour ne jamais la redemander
 let hljsPromise = null;
 
 function ensureHighlighter() {
@@ -24,12 +21,11 @@ function ensureHighlighter() {
             const link = document.createElement('link');
             link.id   = 'hljs-theme';
             link.rel  = 'stylesheet';
-            // atom-one-dark se marie bien avec le fond #1e1e2e deja applique sur <pre>
-            link.href = `${HLJS_CDN}/styles/atom-one-dark.min.css`;
+            link.href = assetUrl('vendor/highlight/atom-one-dark.min.css');
             document.head.appendChild(link);
         }
         const script = document.createElement('script');
-        script.src    = `${HLJS_CDN}/highlight.min.js`;
+        script.src    = assetUrl('vendor/highlight/highlight.min.js');
         script.async  = true;
         script.onload = () => resolve(window.hljs);
         script.onerror = () => {

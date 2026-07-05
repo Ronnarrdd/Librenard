@@ -17,6 +17,11 @@ yarn-error.log*
 .tmp/
 dist/
 build/
+pagefind/
+
+# Wiki pre-rendu et images miroir BookStack (generes par npm run build)
+wiki/
+images/wiki/
 
 # Système d'exploitation
 .DS_Store

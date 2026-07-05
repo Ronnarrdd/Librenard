@@ -1,9 +1,11 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { formatContent } from './lib/format-html.mjs';
 import { site, withBasePath, prefixFor, renderDocument, escapeXml, fallbackAttr } from './lib/site-template.mjs';
 import { prerenderWiki, bookCardStaticHtml } from './lib/wiki-prerender.mjs';
+import { setupVendorAssets } from './lib/vendor-assets.mjs';
+import { buildPagefindIndex } from './lib/pagefind-index.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -117,10 +119,21 @@ const pages = [
         assetPrefix: '/site/',
         fallbackPrefix: '../',
         rootRelativeContent: true,
-        scripts: [{ src: 'js/script.js' }],
-        fontHref: 'https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap'
+        scripts: [{ src: 'js/script.js' }]
     }
 ];
+
+await setupVendorAssets();
+
+async function hasWikiPages() {
+    const wikiDir = path.join(rootDir, 'wiki');
+    try {
+        const entries = await readdir(wikiDir, { recursive: true, withFileTypes: true });
+        return entries.some(e => e.isFile() && e.name.endsWith('.html'));
+    } catch {
+        return false;
+    }
+}
 
 function publicPath(output) {
     if (output === 'index.html') return withBasePath('/');
@@ -302,3 +315,7 @@ await buildPages(booksByShelf);
 await buildSitemap(wikiEntries);
 await buildRobots();
 await buildManifest();
+
+if (await hasWikiPages()) {
+    await buildPagefindIndex(rootDir);
+}

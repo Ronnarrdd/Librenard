@@ -26,7 +26,8 @@ export const navItems = [
     { href: 'a-propos.html', key: 'a-propos', label: 'À propos' }
 ];
 
-export const defaultFontHref = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap';
+/** @deprecated Les polices sont locales (css/fonts.css). Conserve pour compat. */
+export const defaultFontHref = null;
 
 export function withBasePath(urlPath) {
     const basePath = site.basePath.replace(/\/$/, '');
@@ -101,10 +102,23 @@ export function renderThemeInit() {
  * @param {object} [page.jsonLd]        Donnees structurees a serialiser.
  * @param {string} prefix               Prefixe relatif des assets.
  */
+export function renderWikiSearch() {
+    return `<div class="wiki-search" role="search">
+            <label for="wiki-search-input" class="sr-only">Rechercher dans le wiki</label>
+            <svg class="wiki-search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="20" y1="20" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="search" id="wiki-search-input" class="wiki-search-input" placeholder="Rechercher dans le wiki…" autocomplete="off" spellcheck="false" aria-controls="wiki-search-results" aria-expanded="false">
+            <kbd class="wiki-search-kbd" aria-hidden="true">/</kbd>
+            <div id="wiki-search-results" class="wiki-search-results" role="listbox" aria-label="Résultats de recherche" hidden></div>
+        </div>`;
+}
+
 export function renderHead(page, prefix) {
     const canonical = page.canonicalUrl;
-    const fontHref = page.fontHref || defaultFontHref;
     const ogImage = page.ogImage || site.ogImage;
+    const basePath = site.basePath.replace(/\/$/, '') || '';
     const cssFallback = page.fallbackPrefix
         ? `<link rel="stylesheet" href="${page.fallbackPrefix}css/style.css">`
         : '';
@@ -138,10 +152,11 @@ export function renderHead(page, prefix) {
         '<meta name="apple-mobile-web-app-title" content="Librenard">',
         `<link rel="manifest" href="${prefix}site.webmanifest">`,
         `<link rel="icon" type="image/webp" href="${prefix}images/renard.webp">`,
-        '<link rel="preconnect" href="https://fonts.googleapis.com">',
-        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
-        `<link href="${fontHref}" rel="stylesheet">`,
+        `<meta name="site-base" content="${basePath}">`,
+        `<link rel="stylesheet" href="${prefix}css/fonts.css">`,
         `<link rel="stylesheet" href="${prefix}css/style.css">`,
+        page.pagefindType ? `<meta name="pagefind:type" content="${escapeAttr(page.pagefindType)}">` : '',
+        page.pagefindBook ? `<meta name="pagefind:book" content="${escapeAttr(page.pagefindBook)}">` : '',
         cssFallback,
         jsonLd,
         `<title>${escapeAttr(page.title)}</title>`
