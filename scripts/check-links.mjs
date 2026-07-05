@@ -10,6 +10,17 @@ const siteBasePath = '/site';
 
 const ignoredSchemes = new Set(['mailto:', 'tel:', 'javascript:', 'data:', 'blob:']);
 
+// Liens valides dans un navigateur mais inaccessibles aux requetes automatiques (WAF, anti-bot).
+const externalAllowlist = new Set([
+    'https://www.malekal.com/ntuser-dat-fichier-systeme-utilisateur-windows'
+]);
+
+const browserHeaders = {
+    'User-Agent': 'Mozilla/5.0 (compatible; LibrenardLinkCheck/1.0; +https://librenard.fr)',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8'
+};
+
 async function listHtmlFiles(dir = rootDir) {
     const entries = await readdir(dir, { withFileTypes: true });
     const files = [];
@@ -147,27 +158,49 @@ async function checkLocalLink(link, htmlCache, idCache) {
     return null;
 }
 
+function externalUrlKey(value) {
+    const url = new URL(value);
+    url.hash = '';
+    url.search = '';
+    const path = url.pathname.replace(/\/$/, '') || '';
+    return `${url.origin}${path}`.toLowerCase();
+}
+
+async function drainResponse(response) {
+    try {
+        await response.body?.cancel?.();
+    } catch (_) {
+        // Corps deja consomme ou annulation impossible : on ignore.
+    }
+}
+
 async function checkRemoteLink(link) {
+    if (externalAllowlist.has(externalUrlKey(link.value))) {
+        console.log(`Lien externe en liste blanche (anti-bot) : ${link.value}`);
+        return null;
+    }
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
+    const fetchOpts = {
+        redirect: 'follow',
+        signal: controller.signal,
+        headers: browserHeaders
+    };
 
     try {
-        let response = await fetch(link.value, {
-            method: 'HEAD',
-            redirect: 'follow',
-            signal: controller.signal
-        });
+        let response = await fetch(link.value, { ...fetchOpts, method: 'HEAD' });
 
-        if (response.status === 405 || response.status === 403) {
-            response = await fetch(link.value, {
-                method: 'GET',
-                redirect: 'follow',
-                signal: controller.signal
-            });
+        if ([403, 404, 405].includes(response.status)) {
+            await drainResponse(response);
+            response = await fetch(link.value, { ...fetchOpts, method: 'GET' });
         }
 
-        if (response.status >= 400) {
-            return `HTTP ${response.status}: ${relative(link.filePath)} -> ${link.value}`;
+        const failureStatus = response.status;
+        await drainResponse(response);
+
+        if (failureStatus >= 400) {
+            return `HTTP ${failureStatus}: ${relative(link.filePath)} -> ${link.value}`;
         }
     } catch (error) {
         return `Erreur externe: ${relative(link.filePath)} -> ${link.value} (${error.message})`;
