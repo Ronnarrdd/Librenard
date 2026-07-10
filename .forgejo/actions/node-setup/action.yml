@@ -1,0 +1,25 @@
+# Équivalent du bloc `.node-setup` de l'ancien .gitlab-ci.yml.
+# L'image node:22-bookworm fournit node/npm : plus besoin d'installer
+# Node via apt + nodesource à chaque job.
+name: Préparation Node
+description: Cache npm puis npm ci
+
+runs:
+  using: composite
+  steps:
+    - name: Cache npm
+      uses: https://code.forgejo.org/actions/cache@v4
+      with:
+        path: ~/.npm
+        key: npm-${{ hashFiles('package-lock.json') }}
+        restore-keys: npm-
+
+    - name: Versions
+      shell: bash
+      run: |
+        node --version
+        npm --version
+
+    - name: Installation des dépendances
+      shell: bash
+      run: npm ci

@@ -1,0 +1,27 @@
+# Exploration des liens externes — remplace les jobs GitLab
+# "exploration-liens-externes" (manuel) et "planifie-exploration-liens" (schedule).
+# Déclenchement manuel via l'onglet Actions (workflow_dispatch) ou chaque lundi à 06h00 UTC.
+
+name: Exploration des liens externes
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  exploration-liens-externes:
+    name: Exploration — liens externes
+    runs-on: docker
+    container:
+      image: node:22-bookworm
+    continue-on-error: true
+    steps:
+      - uses: https://code.forgejo.org/actions/checkout@v4
+      - uses: ./.forgejo/actions/node-setup
+      - name: Build du site
+        env:
+          BOOKSTACK_TOKEN: ${{ secrets.BOOKSTACK_TOKEN }}
+        run: npm run build
+      - name: Vérification des liens externes
+        run: npm run check:links:external
