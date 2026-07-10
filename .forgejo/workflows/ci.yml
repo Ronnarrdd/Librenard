@@ -1,6 +1,7 @@
 # Pipeline Librenard — Forgejo Actions (remplace l'ancien .gitlab-ci.yml).
 # Token BookStack : js/wiki/api.js (surcharge possible via le secret BOOKSTACK_TOKEN).
-# Étapes : renifler (tests, audit) -> tisser (build) -> patrouille (vérifications).
+# Le build et les patrouilles vivent dans un seul job : pas de transfert
+# d'artefacts entre jobs (le site construit dépasse la limite nginx par défaut).
 
 name: Pipeline Librenard
 
@@ -35,16 +36,17 @@ jobs:
       - name: Audit des dépendances
         run: npm audit --audit-level=high
 
-  # --- Tisser : génération du site ---
+  # --- Tisser puis patrouiller : build et vérifications dans le même job ---
 
-  tissage-build-site:
-    name: Tissage — build du site
+  tissage-et-patrouille:
+    name: Tissage — build du site et patrouille
     runs-on: docker
     container:
       image: node:22-bookworm
     steps:
       - uses: https://code.forgejo.org/actions/checkout@v4
       - uses: ./.forgejo/actions/node-setup
+
       - name: Build du site
         env:
           BOOKSTACK_TOKEN: ${{ secrets.BOOKSTACK_TOKEN }}
@@ -56,12 +58,42 @@ jobs:
             echo "Build hors ligne (--no-wiki) : pas d'appel API sur les branches/PR."
             npm run build -- --no-wiki
           fi
-      - name: Publication des artefacts
+
+      - name: Patrouille — recherche Pagefind
+        run: |
+          if [ ! -f pagefind/pagefind.js ]; then
+            if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ]; then
+              echo "Index Pagefind manquant sur main : la recherche wiki offline est cassée."
+              exit 1
+            fi
+            echo "Pas d'index Pagefind (build --no-wiki) : normal sur cette branche."
+            exit 0
+          fi
+          echo "Index Pagefind présent : recherche offline OK."
+
+      - name: Patrouille — cartographie sitemap
+        continue-on-error: true
+        run: |
+          test -f sitemap.xml
+          URL_COUNT=$(grep -c '<url>' sitemap.xml)
+          WIKI_COUNT=$(grep -c '<loc>https://librenard.fr/site/wiki/' sitemap.xml || true)
+          echo "Sitemap : ${URL_COUNT} URLs au total, dont ${WIKI_COUNT} pages wiki."
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ] && [ "$WIKI_COUNT" -lt 50 ]; then
+            echo "Alerte : le sitemap main contient peu de pages wiki (${WIKI_COUNT})."
+            exit 1
+          fi
+
+      - name: Patrouille — liens internes
+        run: npm run check:links
+
+      # Téléchargement de confort : nécessite client_max_body_size relevé
+      # dans le nginx devant Forgejo, sinon 413. Non bloquant en attendant.
+      - name: Publication de l'artefact du site
+        continue-on-error: true
         uses: https://code.forgejo.org/forgejo/upload-artifact@v4
         with:
           name: site
           retention-days: 14
-          include-hidden-files: false
           if-no-files-found: error
           path: |
             index.html
@@ -80,67 +112,3 @@ jobs:
             sitemap.xml
             robots.txt
             site.webmanifest
-
-  # --- Patrouille : vérifications post-build ---
-
-  recherche-pagefind:
-    name: Patrouille — recherche Pagefind
-    runs-on: docker
-    container:
-      image: node:22-bookworm
-    needs: tissage-build-site
-    steps:
-      - name: Récupération des artefacts
-        uses: https://code.forgejo.org/forgejo/download-artifact@v4
-        with:
-          name: site
-      - name: Vérification de l'index Pagefind
-        run: |
-          if [ ! -f pagefind/pagefind.js ]; then
-            if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ]; then
-              echo "Index Pagefind manquant sur main : la recherche wiki offline est cassée."
-              exit 1
-            fi
-            echo "Pas d'index Pagefind (build --no-wiki) : normal sur cette branche."
-            exit 0
-          fi
-          echo "Index Pagefind présent : recherche offline OK."
-
-  cartographie-sitemap:
-    name: Patrouille — cartographie sitemap
-    runs-on: docker
-    container:
-      image: node:22-bookworm
-    needs: tissage-build-site
-    continue-on-error: true
-    steps:
-      - name: Récupération des artefacts
-        uses: https://code.forgejo.org/forgejo/download-artifact@v4
-        with:
-          name: site
-      - name: Vérification du sitemap
-        run: |
-          test -f sitemap.xml
-          URL_COUNT=$(grep -c '<url>' sitemap.xml)
-          WIKI_COUNT=$(grep -c '<loc>https://librenard.fr/site/wiki/' sitemap.xml || true)
-          echo "Sitemap : ${URL_COUNT} URLs au total, dont ${WIKI_COUNT} pages wiki."
-          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ] && [ "$WIKI_COUNT" -lt 50 ]; then
-            echo "Alerte : le sitemap main contient peu de pages wiki (${WIKI_COUNT})."
-            exit 1
-          fi
-
-  pistes-internes-liens:
-    name: Patrouille — liens internes
-    runs-on: docker
-    container:
-      image: node:22-bookworm
-    needs: tissage-build-site
-    steps:
-      - uses: https://code.forgejo.org/actions/checkout@v4
-      - uses: ./.forgejo/actions/node-setup
-      - name: Récupération des artefacts (écrase les sources par le build)
-        uses: https://code.forgejo.org/forgejo/download-artifact@v4
-        with:
-          name: site
-      - name: Vérification des liens internes
-        run: npm run check:links
