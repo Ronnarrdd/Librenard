@@ -67,6 +67,21 @@
     margin-bottom: 1.8rem;
 }
 
+/* Hero sans illustration (outils) : une seule colonne, le halo suffit */
+.hero-solo {
+    grid-template-columns: 1fr;
+}
+
+.hero-solo p {
+    max-width: 620px;
+}
+
+.hero-badges {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
 .chip-list {
     display: flex;
     flex-wrap: wrap;
