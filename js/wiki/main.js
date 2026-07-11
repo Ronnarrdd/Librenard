@@ -4,7 +4,7 @@
 // de l'init des differents widgets (recherche, dyslexie, flux d'accueil).
 //
 // Surfaces gerees :
-//  - Flux "Derniers livres" sur index.html (#wiki-feed-list)
+//  - Flux "Dernières modifications" sur index.html (#wiki-feed-list)
 //  - Liste complete des livres sur wiki.html (vue par defaut)
 //  - Detail d'un livre + lecture d'un article (routage par hash)
 // -----------------------------------------------------------------

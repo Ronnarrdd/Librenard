@@ -12,7 +12,8 @@ export const cache = {
     books: null,
     booksBySlug: {},
     pageById: {},
-    shelvesBySlug: {}
+    shelvesBySlug: {},
+    recentPages: null
 };
 
 export function apiFetch(path) {
@@ -73,6 +74,32 @@ export async function getVisibleBooks(shelfSlug) {
     if (!shelfSlug) return allBooks;
     const { bookIds } = await getShelfBookIds(shelfSlug);
     return allBooks.filter(b => bookIds.has(b.id));
+}
+
+// Selection pure des pages recentes : ecarte les brouillons, restreint aux
+// livres visibles (visibleBookIds = Set d'ids, ou null pour tout garder)
+// et coupe a `limit`. L'API renvoie deja les pages triees par -updated_at.
+export function selectRecentPages(pages, visibleBookIds, limit) {
+    return (pages || [])
+        .filter(p => !p.draft)
+        .filter(p => !visibleBookIds || visibleBookIds.has(p.book_id))
+        .slice(0, limit);
+}
+
+// Dernieres pages modifiees du wiki, restreintes a une eventuelle etagere.
+// Contrairement a getBooks(), le champ updated_at d'une page bouge des
+// qu'elle est editee : c'est la vraie source des "dernieres modifications".
+export async function getRecentPages(shelfSlug, limit) {
+    if (!cache.recentPages) {
+        const json = await apiFetch(`/pages?count=50&sort=-updated_at`);
+        cache.recentPages = json.data || [];
+    }
+    let visibleBookIds = null;
+    if (shelfSlug) {
+        const { bookIds } = await getShelfBookIds(shelfSlug);
+        visibleBookIds = bookIds;
+    }
+    return selectRecentPages(cache.recentPages, visibleBookIds, limit);
 }
 
 export function flattenPages(book) {
