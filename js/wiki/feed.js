@@ -5,11 +5,10 @@
 // se baser sur les pages garantit que le flux reflete la vraie activite.
 
 import { WIKI_CONFIG, getBooks, getRecentPages } from './api.js';
-import { escapeHtml, formatRelativeDate, staticWikiPath } from './helpers.js';
+import { escapeHtml, formatRelativeDate } from './helpers.js';
 
 function feedItemHtml(page, bookName) {
-    // Lien direct vers l'article statique prerendu (meta OpenGraph du contenu).
-    const href = staticWikiPath(page.book_slug, page.slug);
+    const href = `wiki.html#/book/${encodeURIComponent(page.book_slug)}/page/${encodeURIComponent(page.slug)}`;
     const meta = [bookName, formatRelativeDate(page.updated_at)]
         .filter(Boolean)
         .map(escapeHtml)

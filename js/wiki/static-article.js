@@ -6,7 +6,7 @@
 // zoom des images, barre de progression, surlignage TOC au scroll,
 // permaliennes sur les titres). Sans JS, la page reste lisible et navigable.
 
-import { highlightArticleCode, startReadingProgress, buildToc, setupTocObserver, setupHeadingAnchors } from './article.js';
+import { highlightArticleCode, startReadingProgress, buildToc, setupTocObserver, setupStaticHeadingAnchors } from './article.js';
 import { setupImageLightbox } from './lightbox.js';
 import { initDyslexicMode } from './dyslexic.js';
 import { initWikiSearch } from './search.js';
@@ -31,7 +31,7 @@ function init() {
 
     // Permaliennes "#" sur les h2/h3. APRES buildToc (ids garantis, et le "#"
     // ne se retrouve pas dans les libelles de la TOC laterale).
-    setupHeadingAnchors(articleBody);
+    setupStaticHeadingAnchors(articleBody);
 }
 
 if (document.readyState === 'loading') {

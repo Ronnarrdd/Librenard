@@ -1,93 +1,191 @@
-// Wiki Librenard - point d'entree JS des pages listant les livres
+// Wiki Librenard - mini-SPA
 // -----------------------------------------------------------------
-// Depuis que la lecture (livre + article) vit sur les pages statiques
-// prerendues (wiki/<livre>.html, wiki/<livre>/<article>.html), ce module :
-//  - redirige les anciennes routes hash (#/book/...) vers ces pages statiques
-//    (elles seules portent les meta OpenGraph lisibles par les crawlers) ;
-//  - re-rend la grille de livres depuis l'API (dates relatives, contenu frais) ;
-//  - initialise recherche, mode dyslexie, flux d'accueil et prefetch au survol.
-//
-// Surfaces gerees :
-//  - Flux "Dernières modifications" sur index.html (#wiki-feed-list)
-//  - Grille des livres sur wiki.html et projets.html (#wiki-view)
+// Navigation interne (flux d'accueil, cartes, hash #/book/...) : contenu
+// charge en direct depuis l'API BookStack a chaque visite.
+// Les pages statiques wiki/<livre>[/<article>].html (generees au build)
+// restent les URL de partage avec les bonnes meta OpenGraph pour les reseaux
+// sociaux ; la recherche Pagefind et le sitemap pointent aussi dessus.
 // -----------------------------------------------------------------
 
-import { WIKI_CONFIG } from './api.js';
-import { parseWikiHash, staticWikiPath } from './helpers.js';
+import { WIKI_CONFIG, cache, getBookBySlug, getPage, flattenPages } from './api.js';
+import { escapeHtml } from './helpers.js';
+import { snapshotDefaultMeta } from './meta.js';
 import { initDyslexicMode } from './dyslexic.js';
 import { initWikiSearch } from './search.js';
 import { loadWikiFeed } from './feed.js';
-import { viewList } from './views.js';
+import { renderLoading, viewList, viewBook, viewPage } from './views.js';
+import { stopReadingProgress, disconnectTocObserver } from './article.js';
 
-// ---------- REDIRECTION DES ROUTES HASH HERITEES ----------
+// ---------- ROUTEUR ----------
 
-// Les URLs #/book/<b>[/page/<p>[/h/<id>]] circulent encore (favoris, liens
-// partages). On les redirige vers la page statique equivalente, qui porte
-// titre, description et image du contenu pour les previews. location.replace
-// pour ne pas laisser l'URL hash dans l'historique.
-function redirectLegacyHash() {
-    const state = parseWikiHash(location.hash);
-    if (state.name === 'list') return false;
-    const path = staticWikiPath(state.bookSlug, state.pageSlug, state.sectionSlug);
-    location.replace(new URL(path, `${location.origin}${location.pathname}`).href);
-    return true;
+function parseHash() {
+    const raw = location.hash.replace(/^#\/?/, '');
+    if (!raw) return { name: 'list' };
+    const parts = raw.split('/').filter(Boolean).map(decodeURIComponent);
+    if (parts[0] === 'book' && parts[1]) {
+        if (parts[2] === 'page' && parts[3]) {
+            // Suffixe optionnel : /h/<sectionId> pour deep-link vers une section.
+            // Retrocompatible : les URLs existantes (sans /h/...) fonctionnent a l'identique.
+            const sectionSlug = (parts[4] === 'h' && parts[5]) ? parts[5] : null;
+            return { name: 'page', bookSlug: parts[1], pageSlug: parts[3], sectionSlug };
+        }
+        return { name: 'book', bookSlug: parts[1] };
+    }
+    return { name: 'list' };
 }
 
-// ---------- GRILLE DES LIVRES ----------
-
-async function renderGrid() {
+async function router() {
     const view = document.getElementById('wiki-view');
     if (!view) return;
 
     if (!WIKI_CONFIG.token) {
-        // La grille prerendue au build reste affichee : ses liens statiques
-        // fonctionnent sans l'API. Rien a faire.
+        view.innerHTML = `
+            <p class="wiki-empty">
+                Le jeton API n'est pas configuré. Retrouvez le wiki sur
+                <a href="${WIKI_CONFIG.baseUrl}" target="_blank" rel="noopener noreferrer">librenard.fr/wiki</a>.
+            </p>`;
         return;
     }
 
+    // Nettoyage de l'observer TOC avant de changer de vue
+    disconnectTocObserver();
+
+    // Coupe la barre de progression si on quitte un article
+    stopReadingProgress();
+
+    const state = parseHash();
+
+    // La grille de livres est prerendue au build dans le HTML (SEO + no-JS).
+    // Sur la vue liste, on la laisse affichee pendant le fetch au lieu d'un
+    // ecran de chargement : pas de flash, et elle sert de repli si l'API tombe.
+    const hasStaticGrid = Boolean(view.querySelector('.book-card:not(.book-card-skeleton)'));
+    if (!(state.name === 'list' && hasStaticGrid)) {
+        renderLoading(view);
+    }
+
+    // Elements a masquer en mode lecture (livre/article) : page-header, cartes, intros...
+    // Convention : ajouter la classe .wiki-hide-in-view sur les elements concernes.
+    const onList = state.name === 'list';
+    document.querySelectorAll('.wiki-hide-in-view').forEach(el => {
+        el.style.display = onList ? '' : 'none';
+    });
+
+    // Pas de fil d'Ariane sur la vue racine (juste "Wiki", redondant)
+    const breadcrumb = document.getElementById('wiki-breadcrumb');
+    if (breadcrumb) {
+        breadcrumb.style.display = onList ? 'none' : '';
+    }
+
     try {
-        await viewList(view);
+        if (state.name === 'page') {
+            await viewPage(view, state.bookSlug, state.pageSlug, state.sectionSlug);
+        } else if (state.name === 'book') {
+            await viewBook(view, state.bookSlug);
+        } else {
+            await viewList(view);
+        }
     } catch (err) {
-        console.warn('[wiki] grille non rafraichie, on garde la version prerendue :', err);
+        console.error('[wiki]', err);
+        if (state.name === 'list' && hasStaticGrid) {
+            // La grille prerendue est toujours a l'ecran et ses liens (pages
+            // statiques) fonctionnent sans l'API : on la garde telle quelle.
+            return;
+        }
+        view.innerHTML = `
+            <p class="wiki-empty">
+                Oups, impossible de charger ce contenu&nbsp;: ${escapeHtml(err.message)}.<br>
+                <a href="#/">← Retour à la liste des livres</a>
+            </p>`;
     }
 }
 
-// ---------- PREFETCH DES PAGES STATIQUES ----------
+// ---------- PREFETCH (navigation SPA instantanee) ----------
 
-// <link rel="prefetch"> a l'intention (survol, contact tactile, focus clavier)
-// sur les liens internes vers wiki/ : le clic suivant est quasi instantane.
+// Declenche un prefetch de page ou de livre (via le cache existant) au bout
+// d'un court delai de survol, pour que le clic suivant soit instantane.
+// Delegation globale : un seul jeu de listeners pour toute l'application.
 function setupPrefetch() {
-    const prefetched = new Set();
+    const PREFETCH_DELAY_MS = 120;
+    const timers = new WeakMap();
 
-    function prefetch(link) {
-        const href = link?.getAttribute('href') || '';
-        if (!/^wiki\/[^\s]+\.html/.test(href)) return;
-        const url = new URL(href, document.baseURI).href;
-        if (prefetched.has(url)) return;
-        prefetched.add(url);
-        const el = document.createElement('link');
-        el.rel = 'prefetch';
-        el.href = url;
-        document.head.appendChild(el);
+    async function doPrefetch(bookSlug, pageSlug) {
+        try {
+            const book = await getBookBySlug(bookSlug);
+            if (!pageSlug) return;
+            const ref = flattenPages(book).find(p => p.slug === pageSlug);
+            if (ref && !cache.pageById[ref.id]) {
+                await getPage(ref.id);
+            }
+        } catch (_) {
+            // Prefetch est best-effort : une erreur ne doit jamais remonter
+        }
     }
 
-    const handler = (e) => prefetch(e.target.closest?.('a[href^="wiki/"]'));
-    document.addEventListener('mouseover', handler);
-    document.addEventListener('touchstart', handler, { passive: true });
-    document.addEventListener('focusin', handler);
+    function parseWikiLink(link) {
+        const href = link.getAttribute('href') || '';
+        const m = href.match(/^#\/book\/([^/]+)(?:\/page\/([^/]+))?/);
+        if (!m) return null;
+        return {
+            bookSlug: decodeURIComponent(m[1]),
+            pageSlug: m[2] ? decodeURIComponent(m[2]) : null
+        };
+    }
+
+    function schedulePrefetch(link) {
+        if (!link || link.dataset.prefetched) return;
+        const parsed = parseWikiLink(link);
+        if (!parsed) return;
+        const tid = setTimeout(() => {
+            link.dataset.prefetched = '1';
+            timers.delete(link);
+            doPrefetch(parsed.bookSlug, parsed.pageSlug);
+        }, PREFETCH_DELAY_MS);
+        timers.set(link, tid);
+    }
+
+    function cancelPrefetch(link) {
+        if (!link) return;
+        const tid = timers.get(link);
+        if (tid) {
+            clearTimeout(tid);
+            timers.delete(link);
+        }
+    }
+
+    // mouseover bulle, contrairement a mouseenter : un seul listener global.
+    // On filtre les liens SPA vers livre/page pour ne rien fetcher d'inutile.
+    document.addEventListener('mouseover', (e) => {
+        const link = e.target.closest?.('a[href^="#/book/"]');
+        if (link) schedulePrefetch(link);
+    });
+    document.addEventListener('mouseout', (e) => {
+        const link = e.target.closest?.('a[href^="#/book/"]');
+        if (link) cancelPrefetch(link);
+    });
+    // Sur mobile : le premier contact declenche, ~50 ms avant le click
+    document.addEventListener('touchstart', (e) => {
+        const link = e.target.closest?.('a[href^="#/book/"]');
+        if (link) schedulePrefetch(link);
+    }, { passive: true });
+    // Accessibilite : le focus clavier declenche le prefetch aussi
+    document.addEventListener('focusin', (e) => {
+        const link = e.target.closest?.('a[href^="#/book/"]');
+        if (link) schedulePrefetch(link);
+    });
 }
 
 // ---------- INIT ----------
 
 function init() {
-    if (redirectLegacyHash()) return;
+    // Snapshot des meta initiales de wiki.html, AVANT toute mise a jour,
+    // pour pouvoir y revenir sur la vue liste.
+    snapshotDefaultMeta();
     initDyslexicMode();
     initWikiSearch();
     setupPrefetch();
     loadWikiFeed();
-    renderGrid();
-    // Un lien hash residuel clique apres le chargement passe aussi par la redirection.
-    window.addEventListener('hashchange', redirectLegacyHash);
+    router();
+    window.addEventListener('hashchange', router);
 }
 
 if (document.readyState === 'loading') {

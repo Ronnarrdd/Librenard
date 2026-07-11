@@ -1,5 +1,7 @@
 // Helpers purs (formatage, echappement, sanitation, slugify, routes wiki).
 
+import { WIKI_CONFIG } from './api.js';
+
 export function escapeHtml(s) {
     return String(s ?? '')
         .replace(/&/g, '&amp;')
@@ -91,4 +93,22 @@ export function slugify(text) {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
         .substring(0, 80) || 'section';
+}
+
+// Remplace les URL Bookstack internes par des ancres hash (routage SPA).
+export function rewriteWikiLinks(html) {
+    const base = escapeRegex(WIKI_CONFIG.baseUrl.replace(/\/$/, ''));
+    html = html.replace(
+        new RegExp(`${base}/books/([\\w-]+)/page/([\\w-]+)`, 'g'),
+        (_, b, p) => `#/book/${b}/page/${p}`
+    );
+    html = html.replace(
+        new RegExp(`${base}/books/([\\w-]+)/chapter/[\\w-]+`, 'g'),
+        (_, b) => `#/book/${b}`
+    );
+    html = html.replace(
+        new RegExp(`${base}/books/([\\w-]+)(?!/)`, 'g'),
+        (_, b) => `#/book/${b}`
+    );
+    return html;
 }

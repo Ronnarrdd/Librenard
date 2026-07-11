@@ -60,12 +60,14 @@ vraie page statique pour chaque contenu :
 - `wiki/<livre>.html` : le sommaire d'un livre
 - `wiki/<livre>/<article>.html` : l'article complet, avec table des matières, navigation précédent/suivant et JSON-LD
 
-Ces pages sont les URL canoniques et partageables du contenu : chacune porte le titre,
-la description et la couverture du livre en balises OpenGraph/Twitter, donc un lien
-partagé sur un réseau social affiche la bonne preview. Elles sont listées dans le
-sitemap avec la vraie date de mise à jour BookStack. Les anciennes URL à hash
-(`wiki.html#/book/...`) sont redirigées vers elles par `js/wiki/main.js` : les favoris
-et liens déjà partagés continuent de fonctionner.
+Ces pages sont les URL canoniques et **partageables** du contenu : chacune porte le titre,
+la description et la couverture du livre en balises OpenGraph/Twitter. Elles sont listées dans le
+sitemap avec la vraie date de mise à jour BookStack.
+
+La navigation **depuis le site** (flux d'accueil, cartes de livres, liens `#/book/...` sur
+`wiki.html`) passe par le mini-SPA : le contenu est relu en direct depuis l'API BookStack à
+chaque visite, sans attendre un rebuild. Pour une preview correcte sur un réseau social,
+partagez l'URL statique (`wiki/bases-de-linux.html`, etc.), pas la route hash.
 
 Deux règles du terrier :
 
