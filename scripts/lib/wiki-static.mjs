@@ -62,6 +62,22 @@ export function readingMinutes(words) {
     return Math.max(1, Math.round(words / 220));
 }
 
+// Manifeste { slug: minutes } des temps de lecture par livre, calcule au build
+// a partir du HTML deja fetche (book.flatPages[].detail.html). Consomme par :
+//  - bookCardStaticHtml (cartes de la grille prerendue)
+//  - le SPA via wiki/reading-times.json (cartes re-rendues au runtime)
+// Les livres sans page publiee sont omis : pas de badge plutot qu'un "~1 min" menteur.
+export function readingTimesManifest(books) {
+    const manifest = {};
+    for (const book of books) {
+        const pages = book.flatPages || [];
+        if (!pages.length) continue;
+        const words = pages.reduce((sum, p) => sum + wordCountFromHtml(p.detail?.html), 0);
+        manifest[book.slug] = readingMinutes(words);
+    }
+    return manifest;
+}
+
 const MONTHS_FR = [
     'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
     'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'

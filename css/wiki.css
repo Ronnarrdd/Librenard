@@ -193,6 +193,44 @@
     color: var(--accent-color);
 }
 
+/* Badge temps de lecture, pose sur le coin de la couverture. Frere du
+   .book-card-cover (aria-hidden) et non enfant : lisible aux lecteurs d'ecran. */
+.book-card-reading-time {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.22rem 0.7rem;
+    background: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+    color: var(--accent-deep);
+    border-radius: var(--border-radius-pill);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    pointer-events: none;
+}
+
+.book-card-reading-time::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>") center/contain no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>") center/contain no-repeat;
+}
+
+.dark-mode .book-card-reading-time {
+    background: rgba(30, 24, 18, 0.82);
+    color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 .book-card-cover-skeleton {
     background: linear-gradient(90deg,
         var(--bg-soft) 0%,

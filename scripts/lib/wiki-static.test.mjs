@@ -8,6 +8,7 @@ import {
     stripHtmlText,
     wordCountFromHtml,
     readingMinutes,
+    readingTimesManifest,
     formatDateFr,
     ensureHeadingIds,
     rewriteBookstackLinks
@@ -64,6 +65,37 @@ test('wordCountFromHtml et readingMinutes', () => {
     assert.equal(readingMinutes(0), 1);
     assert.equal(readingMinutes(219), 1);
     assert.equal(readingMinutes(440), 2);
+});
+
+test('readingTimesManifest : somme les mots de toutes les pages d\'un livre', () => {
+    const mots = n => `<p>${Array.from({ length: n }, (_, i) => `mot${i}`).join(' ')}</p>`;
+    const books = [
+        {
+            slug: 'bases-de-linux',
+            flatPages: [
+                { detail: { html: mots(300) } },
+                { detail: { html: mots(360) } }
+            ]
+        },
+        { slug: 'petit-livre', flatPages: [{ detail: { html: mots(10) } }] }
+    ];
+    assert.deepEqual(readingTimesManifest(books), {
+        'bases-de-linux': 3,   // 660 mots / 220
+        'petit-livre': 1       // minimum 1 min
+    });
+});
+
+test('readingTimesManifest : omet les livres sans page publiee', () => {
+    const books = [
+        { slug: 'vide', flatPages: [] },
+        { slug: 'sans-flat' }
+    ];
+    assert.deepEqual(readingTimesManifest(books), {});
+});
+
+test('readingTimesManifest : page sans detail comptee comme 0 mot', () => {
+    const books = [{ slug: 'incomplet', flatPages: [{ detail: null }, {}] }];
+    assert.deepEqual(readingTimesManifest(books), { incomplet: 1 });
 });
 
 // ---------- Dates ----------

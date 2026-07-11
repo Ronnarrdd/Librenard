@@ -13,7 +13,8 @@ export const cache = {
     booksBySlug: {},
     pageById: {},
     shelvesBySlug: {},
-    recentPages: null
+    recentPages: null,
+    readingTimes: null
 };
 
 export function apiFetch(path) {
@@ -100,6 +101,21 @@ export async function getRecentPages(shelfSlug, limit) {
         visibleBookIds = bookIds;
     }
     return selectRecentPages(cache.recentPages, visibleBookIds, limit);
+}
+
+// Temps de lecture par livre { slug: minutes }, precalcule au build
+// (scripts/lib/wiki-prerender.mjs ecrit wiki/reading-times.json). Best-effort :
+// si le fichier manque (build --no-wiki, nouveau livre pas encore rebuild),
+// retourne {} et les cartes s'affichent simplement sans badge.
+export async function getReadingTimes() {
+    if (cache.readingTimes) return cache.readingTimes;
+    try {
+        const res = await fetch(new URL('wiki/reading-times.json', document.baseURI));
+        cache.readingTimes = res.ok ? await res.json() : {};
+    } catch (_) {
+        cache.readingTimes = {};
+    }
+    return cache.readingTimes;
 }
 
 export function flattenPages(book) {

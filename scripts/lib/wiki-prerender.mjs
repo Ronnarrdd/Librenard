@@ -23,6 +23,7 @@ import {
     stripHtmlText,
     wordCountFromHtml,
     readingMinutes,
+    readingTimesManifest,
     formatDateFr,
     ensureHeadingIds,
     rewriteBookstackLinks
@@ -305,11 +306,12 @@ function renderBookDocument(books, book) {
     }).join('');
 
     const pageCount = book.flatPages.length;
-    const totalWords = book.flatPages.reduce((sum, p) => sum + wordCountFromHtml(p.detail.html), 0);
+    // book.readingMinutes est calcule dans prerenderWiki (readingTimesManifest),
+    // meme valeur que les cartes et le manifest JSON du SPA.
     const statsHtml = pageCount > 0 ? `
                     <div class="wiki-book-stats">
                         <span class="wiki-book-stat"><span class="wiki-book-stat-icon" aria-hidden="true">📚</span>${pageCount} page${pageCount > 1 ? 's' : ''}</span>
-                        <span class="wiki-reading-time">~${readingMinutes(totalWords)} min de lecture</span>
+                        <span class="wiki-reading-time">~${book.readingMinutes} min de lecture</span>
                     </div>` : '';
 
     const content = `${breadcrumbHtml(prefix, book.shelfRef, [{ text: book.name }])}
@@ -368,8 +370,12 @@ export function bookCardStaticHtml(book) {
         ? `<p class="book-card-description">${escapeHtml(book.description)}</p>`
         : '';
     const emptySvg = hasCover ? '' : `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>`;
+    // Hors du .book-card-cover (aria-hidden) pour rester lisible aux lecteurs d'ecran.
+    const readingBadge = book.readingMinutes
+        ? `<span class="book-card-reading-time" title="Temps de lecture estimé">~${book.readingMinutes} min<span class="sr-only"> de lecture</span></span>`
+        : '';
     return `<a class="book-card" href="${bookOutputPath(book.slug)}">
-    <div class="${coverClass}"${coverStyle} aria-hidden="true">${emptySvg}</div>
+    <div class="${coverClass}"${coverStyle} aria-hidden="true">${emptySvg}</div>${readingBadge ? `\n    ${readingBadge}` : ''}
     <div class="book-card-body">
         <h2 class="book-card-title">${escapeHtml(book.name)}</h2>
         ${description}
@@ -391,6 +397,13 @@ export function bookCardStaticHtml(book) {
 export async function prerenderWiki(rootDir) {
     const { books, booksByShelf } = await fetchWikiContent();
     const imageMirror = new WikiImageMirror(rootDir, UPLOADS_BASE, API_TOKEN);
+
+    // Temps de lecture par livre, calcule une fois pour toutes les surfaces :
+    // cartes statiques (book.readingMinutes) et SPA (wiki/reading-times.json).
+    const readingTimes = readingTimesManifest(books);
+    for (const book of books) {
+        book.readingMinutes = readingTimes[book.slug] ?? null;
+    }
 
     const documents = [];
     for (const book of books) {
@@ -439,6 +452,15 @@ export async function prerenderWiki(rootDir) {
     await writeFile(
         path.join(wikiDir, 'sitemap-manifest.json'),
         `${JSON.stringify(sitemapEntries, null, 2)}\n`,
+        'utf8'
+    );
+
+    // Temps de lecture par livre { slug: minutes }, consomme par le SPA
+    // (js/wiki/api.js getReadingTimes) pour afficher le badge sur les cartes
+    // sans avoir a re-fetcher le HTML de toutes les pages cote client.
+    await writeFile(
+        path.join(wikiDir, 'reading-times.json'),
+        `${JSON.stringify(readingTimes, null, 2)}\n`,
         'utf8'
     );
 

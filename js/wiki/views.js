@@ -1,7 +1,7 @@
 // Rendu des trois vues principales du wiki (liste, livre, article)
 // + composants de rendu partages (carte de livre, fil d'Ariane, ecran de chargement).
 
-import { getBookBySlug, getPage, getVisibleBooks, flattenPages } from './api.js';
+import { getBookBySlug, getPage, getVisibleBooks, getReadingTimes, flattenPages } from './api.js';
 import { escapeHtml, formatRelativeDate, rewriteWikiLinks } from './helpers.js';
 import { staticWikiUrl, updateMeta, resetMeta, stripHtmlToText, DEFAULT_META } from './meta.js';
 import {
@@ -18,12 +18,16 @@ import { setupImageLightbox } from './lightbox.js';
 
 // ---------- COMPOSANTS PARTAGES ----------
 
-export function bookCardHtml(book) {
+export function bookCardHtml(book, readingMinutes = null) {
     const hasCover = book.cover && book.cover.url;
     const coverStyle = hasCover ? `style="background-image: url('${escapeHtml(book.cover.url)}')"` : '';
     const coverClass = hasCover ? 'book-card-cover' : 'book-card-cover book-card-cover-empty';
     const description = book.description
         ? `<p class="book-card-description">${escapeHtml(book.description)}</p>`
+        : '';
+    // Hors du .book-card-cover (aria-hidden) pour rester lisible aux lecteurs d'ecran.
+    const readingBadge = readingMinutes
+        ? `<span class="book-card-reading-time" title="Temps de lecture estimé">~${readingMinutes} min<span class="sr-only"> de lecture</span></span>`
         : '';
     return `
         <a class="book-card" href="#/book/${encodeURIComponent(book.slug)}">
@@ -36,6 +40,7 @@ export function bookCardHtml(book) {
                     </svg>
                 `}
             </div>
+            ${readingBadge}
             <div class="book-card-body">
                 <h2 class="book-card-title">${escapeHtml(book.name)}</h2>
                 ${description}
@@ -74,14 +79,19 @@ export function renderLoading(view) {
 
 export async function viewList(view) {
     const shelfSlug = view.dataset.shelf || null;
-    const books = await getVisibleBooks(shelfSlug);
+    // Temps de lecture precalcules au build (best-effort : {} si absent),
+    // charges en parallele de la liste des livres.
+    const [books, readingTimes] = await Promise.all([
+        getVisibleBooks(shelfSlug),
+        getReadingTimes()
+    ]);
     if (!books.length) {
         view.innerHTML = `<p class="wiki-empty">Aucun livre pour le moment.</p>`;
         renderBreadcrumb([]);
         resetMeta();
         return;
     }
-    view.innerHTML = `<div class="books-grid">${books.map(bookCardHtml).join('')}</div>`;
+    view.innerHTML = `<div class="books-grid">${books.map(b => bookCardHtml(b, readingTimes[b.slug])).join('')}</div>`;
     renderBreadcrumb([]);
     // Vue racine : on revient aux meta par defaut de wiki.html
     resetMeta();
