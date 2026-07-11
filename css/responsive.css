@@ -24,6 +24,27 @@
         grid-template-columns: 1fr;
     }
 
+    .tool-row,
+    .tool-row:nth-child(even) {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .tool-row:nth-child(even) .tool-row-media {
+        order: 0;
+    }
+
+    .tool-row:nth-child(even)::before {
+        left: -60px;
+        right: auto;
+    }
+
+    .tool-row-media {
+        max-width: 220px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
     .license-columns {
         grid-template-columns: 1fr;
     }
@@ -118,6 +139,11 @@
     }
 
     .section, .card, .feature-card {
+        padding: 1.75rem;
+        border-radius: var(--border-radius);
+    }
+
+    .tool-row {
         padding: 1.75rem;
         border-radius: var(--border-radius);
     }

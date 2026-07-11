@@ -100,6 +100,145 @@
     background: rgba(255, 255, 255, 0.05);
 }
 
+/* ============ OUTILS : rangées alternées ============ */
+.tool-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.tool-row {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem 2.5rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Halo pastel discret, côté logo (miroir sur les rangées paires) */
+.tool-row::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: -60px;
+    width: 180px;
+    height: 180px;
+    background: var(--pastel-peach);
+    border-radius: 50%;
+    opacity: 0.3;
+    filter: blur(30px);
+    pointer-events: none;
+    transition: var(--transition);
+}
+
+.tool-row:nth-child(even) {
+    grid-template-columns: 1fr 210px;
+}
+
+.tool-row:nth-child(even) .tool-row-media {
+    order: 2;
+}
+
+.tool-row:nth-child(even)::before {
+    left: auto;
+    right: -60px;
+    background: var(--pastel-sun);
+}
+
+.tool-row:nth-child(3n)::before { background: var(--pastel-coral); }
+
+.dark-mode .tool-row::before { opacity: 0.12; }
+
+.tool-row:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.tool-row:hover::before {
+    opacity: 0.5;
+    transform: scale(1.15);
+}
+
+.dark-mode .tool-row:hover::before { opacity: 0.2; }
+
+.tool-row-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--pastel-cream), var(--pastel-peach));
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: 0 6px 14px rgba(255, 154, 107, 0.15);
+    position: relative;
+    z-index: 2;
+}
+
+.dark-mode .tool-row-media {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+.tool-row-media img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}
+
+.tool-row-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    position: relative;
+    z-index: 2;
+}
+
+.tool-row-body h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--text-color);
+}
+
+.tool-row-body p {
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin: 0;
+}
+
+.tool-chips {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+.tool-chips li {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--border-radius-pill);
+    background: var(--bg-soft);
+    color: var(--accent-deep);
+}
+
+.dark-mode .tool-chips li {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent-color);
+}
+
+.tool-row-footer {
+    padding-top: 0.3rem;
+}
+
 /* ============ A PROPOS ============ */
 
 .about-license-header {
