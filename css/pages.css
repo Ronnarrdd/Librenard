@@ -52,28 +52,28 @@
     border-color: var(--accent-soft);
 }
 
-/* ============ A PROPOS ============ */
-.about-hero {
+/* ============ HERO DE PAGE (a-propos, contact) ============ */
+.page-hero {
     grid-template-columns: 1.4fr 1fr;
     padding: 3.5rem 3rem;
     margin-bottom: 1.5rem;
 }
 
-.about-hero .hero-illustration img {
+.page-hero .hero-illustration img {
     max-width: 260px;
 }
 
-.about-hero p {
+.page-hero p {
     margin-bottom: 1.8rem;
 }
 
-.about-chips {
+.chip-list {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
 }
 
-.about-chip {
+.chip {
     font-family: 'Nunito', sans-serif;
     font-weight: 800;
     font-size: 0.88rem;
@@ -85,9 +85,22 @@
     box-shadow: var(--card-shadow);
 }
 
-.dark-mode .about-chip {
+.dark-mode .chip {
     color: var(--accent-color);
 }
+
+/* Pastilles posées sur une carte blanche : fond doux pour rester visibles */
+.section .chip {
+    background: var(--bg-soft);
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.dark-mode .section .chip {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ============ A PROPOS ============ */
 
 .about-license-header {
     display: flex;

@@ -28,7 +28,8 @@
         grid-template-columns: 1fr;
     }
 
-    .about-chips {
+    .hero .chip-list,
+    .hero .contact-links {
         justify-content: center;
     }
 
