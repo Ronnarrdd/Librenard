@@ -172,8 +172,8 @@ function normalizePageContent(content, page) {
 }
 
 // Remplace le contenu de la <section id="wiki-view"> par la grille de livres
-// prerendue : liens reels crawlables + contenu visible sans JS. Le SPA
-// reprend la main au chargement (il re-rend la meme grille en routage hash).
+// prerendue : liens reels crawlables + contenu visible sans JS. Au chargement,
+// js/wiki/main.js re-rend la meme grille depuis l'API (dates relatives, frais).
 // IMPORTANT : #wiki-view doit etre une <section> ne contenant aucune autre
 // section (la regex non-greedy s'arrete au premier </section> rencontre).
 function injectWikiGrid(content, books, output) {

@@ -1,13 +1,12 @@
-// Tout ce qui touche a la lecture d'un article :
+// Confort de lecture des articles prerendus (wiki/<livre>/<article>.html) :
 //  - colorisation syntaxique (highlight.js, lazy-loaded)
 //  - bouton "Copier" sur les blocs de code
 //  - permaliennes "#" sur les titres
-//  - table des matieres laterale + observer de scroll
+//  - observer de scroll de la table des matieres laterale
 //  - barre de progression de lecture
-//  - estimation du temps de lecture (article + livre entier)
+// Consomme par js/wiki/static-article.js. Sans JS, la page reste lisible.
 
-import { escapeHtml, slugify } from './helpers.js';
-import { flattenPages, getPage } from './api.js';
+import { slugify } from './helpers.js';
 import { assetUrl } from './site-paths.js';
 
 // ---------- COLORISATION SYNTAXIQUE (highlight.js, heberge localement) ----------
@@ -137,43 +136,7 @@ export async function highlightArticleCode(articleBody) {
     });
 }
 
-// ---------- TEMPS DE LECTURE + BARRE DE PROGRESSION ----------
-
-// eslint-disable-next-line no-unused-vars
-function estimateReadingMinutes(articleBody) {
-    const text = (articleBody?.textContent || '').trim();
-    if (!text) return 1;
-    const words = text.split(/\s+/).filter(Boolean).length;
-    // ~220 mots/min, lecture francaise moyenne
-    return Math.max(1, Math.round(words / 220));
-}
-
-// Compte les mots d'un HTML sans le parser dans le DOM principal (pas d'effet de bord).
-function wordCountFromHtml(html) {
-    if (!html) return 0;
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    const text = (tmp.textContent || '').trim();
-    if (!text) return 0;
-    return text.split(/\s+/).filter(Boolean).length;
-}
-
-// Agrege le temps de lecture d'un livre en fetchant ses pages en parallele.
-// Les pages fetchees peuplent au passage le cache, ce qui accelere l'ouverture ulterieure.
-export async function computeBookReadingMinutes(book) {
-    const pages = flattenPages(book);
-    if (!pages.length) return { minutes: 0, pageCount: 0 };
-
-    const results = await Promise.allSettled(pages.map(p => getPage(p.id)));
-    let totalWords = 0;
-    for (const r of results) {
-        if (r.status === 'fulfilled' && r.value) {
-            totalWords += wordCountFromHtml(r.value.html);
-        }
-    }
-    const minutes = Math.max(1, Math.round(totalWords / 220));
-    return { minutes, pageCount: pages.length };
-}
+// ---------- BARRE DE PROGRESSION ----------
 
 let progressBarEl        = null;
 let progressScrollTarget = null;
@@ -215,7 +178,7 @@ function onProgressScroll() {
 }
 
 export function startReadingProgress(articleBody) {
-    // Garantit qu'on n'attache jamais deux fois les listeners en cas de double router()
+    // Idempotent : on detache d'eventuels listeners avant de (re)brancher.
     stopReadingProgress();
     const bar = ensureProgressBar();
     bar.classList.add('active');
@@ -225,7 +188,7 @@ export function startReadingProgress(articleBody) {
     updateProgress();
 }
 
-export function stopReadingProgress() {
+function stopReadingProgress() {
     if (progressBarEl) progressBarEl.classList.remove('active');
     window.removeEventListener('scroll', onProgressScroll);
     window.removeEventListener('resize', onProgressScroll);
@@ -268,16 +231,16 @@ export function buildToc(articleBody) {
 }
 
 // Injecte une ancre "#" en premier enfant de chaque h2/h3 de l'article.
-// Doit etre appele APRES buildToc (qui garantit que chaque heading a un id) et
-// idealement APRES l'extraction du textContent pour la TOC laterale (pour que
-// le "#" ne se retrouve pas dans les libelles TOC).
-export function setupHeadingAnchors(articleBody, bookSlug, pageSlug) {
+// Doit etre appele APRES buildToc (qui garantit que chaque heading a un id).
+// L'ancre pointe vers "#<id encode>" sur la page courante : copier ce lien
+// donne une URL statique partageable, avec les vraies meta OpenGraph.
+export function setupHeadingAnchors(articleBody) {
     const headings = articleBody.querySelectorAll('h2, h3');
     headings.forEach(h => {
         if (!h.id || h.querySelector('.wiki-heading-anchor')) return;
         const anchor = document.createElement('a');
         anchor.className = 'wiki-heading-anchor';
-        anchor.href = `#/book/${encodeURIComponent(bookSlug)}/page/${encodeURIComponent(pageSlug)}/h/${encodeURIComponent(h.id)}`;
+        anchor.href = `#${encodeURIComponent(h.id)}`;
         anchor.setAttribute('aria-label', 'Copier le lien vers cette section');
         anchor.textContent = '#';
         let resetTimer = null;
@@ -290,8 +253,8 @@ export function setupHeadingAnchors(articleBody, bookSlug, pageSlug) {
             } catch (_) {
                 // Pas grave : on continue a scroller, juste sans copie
             }
-            // Scroll doux vers le titre, mais on ne touche PAS a location.hash
-            // (eviterait un re-run du router + flash de rechargement de la page)
+            // Scroll doux vers le titre, sans toucher a location.hash
+            // (pas de saut brutal ni d'entree d'historique a chaque clic)
             h.scrollIntoView({ behavior: 'smooth', block: 'start' });
             anchor.classList.add('copied');
             clearTimeout(resetTimer);
@@ -299,21 +262,6 @@ export function setupHeadingAnchors(articleBody, bookSlug, pageSlug) {
         });
         h.insertBefore(anchor, h.firstChild);
     });
-}
-
-export function renderTocSidebar(items) {
-    if (!items || items.length < 2) return '';
-    const links = items.map(item => `
-        <li class="wiki-toc-side-item wiki-toc-side-level-${item.level}">
-            <a href="#${item.id}" data-toc-link="${item.id}">${escapeHtml(item.text)}</a>
-        </li>
-    `).join('');
-    return `
-        <aside class="wiki-toc-sidebar" aria-label="Table des matières">
-            <p class="wiki-toc-side-title">Sur cette page</p>
-            <ul class="wiki-toc-side-list">${links}</ul>
-        </aside>
-    `;
 }
 
 export function setupTocObserver(items, container) {
@@ -360,7 +308,7 @@ export function setupTocObserver(items, container) {
 
     items.forEach(item => currentTocObserver.observe(item.element));
 
-    // Clic sur un lien -> scroll anime (on ne touche pas au hash, routage SPA).
+    // Clic sur un lien -> scroll anime (on ne touche pas au hash de l'URL).
     // Delegation unique sur le container : un seul listener, pas de rebind a chaque rendu.
     container.addEventListener('click', (e) => {
         const link = e.target.closest('[data-toc-link]');
@@ -377,11 +325,4 @@ export function setupTocObserver(items, container) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         setActive(targetId);
     });
-}
-
-export function disconnectTocObserver() {
-    if (currentTocObserver) {
-        currentTocObserver.disconnect();
-        currentTocObserver = null;
-    }
 }

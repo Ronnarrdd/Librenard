@@ -35,8 +35,8 @@ export function decodeEntities(text) {
         .replace(/&([a-zA-Z]+);/g, (m, name) => NAMED_ENTITIES[name.toLowerCase()] ?? m);
 }
 
-// Equivalent serveur de stripHtmlToText (js/wiki/meta.js) : texte brut d'un
-// HTML Bookstack, compacte et tronque proprement a un mot entier.
+// Texte brut d'un HTML Bookstack, compacte et tronque proprement a un mot
+// entier (pour les meta descriptions des pages prerendues).
 export function stripHtmlText(html, maxLen = 200) {
     if (!html) return '';
     const text = decodeEntities(

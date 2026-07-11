@@ -54,15 +54,18 @@ npm run build -- --no-wiki
 
 ## Le prérendu du wiki (ou : comment plaire aux moteurs de recherche)
 
-Le wiki interactif (`wiki.html`, routage par hash `#/book/...`) est invisible pour les
-robots d'indexation. Alors au build, `scripts/lib/wiki-prerender.mjs` interroge l'API
-BookStack et fabrique une vraie page statique pour chaque contenu :
+Au build, `scripts/lib/wiki-prerender.mjs` interroge l'API BookStack et fabrique une
+vraie page statique pour chaque contenu :
 
 - `wiki/<livre>.html` : le sommaire d'un livre
 - `wiki/<livre>/<article>.html` : l'article complet, avec table des matières, navigation précédent/suivant et JSON-LD
 
-Ces pages sont les URL canoniques du contenu. Elles sont listées dans le sitemap avec la
-vraie date de mise à jour BookStack, et le wiki interactif pointe sa balise `canonical` vers elles.
+Ces pages sont les URL canoniques et partageables du contenu : chacune porte le titre,
+la description et la couverture du livre en balises OpenGraph/Twitter, donc un lien
+partagé sur un réseau social affiche la bonne preview. Elles sont listées dans le
+sitemap avec la vraie date de mise à jour BookStack. Les anciennes URL à hash
+(`wiki.html#/book/...`) sont redirigées vers elles par `js/wiki/main.js` : les favoris
+et liens déjà partagés continuent de fonctionner.
 
 Deux règles du terrier :
 
@@ -96,7 +99,7 @@ il tourne en `--no-wiki` pour ne pas marteler l'API.
 ```
 ├── index.html, projets.html, ...   Pages du site (générées, contenu éditable dedans)
 ├── css/                            Styles, découpés par usage
-├── js/                             Script global + SPA wiki (js/wiki/)
+├── js/                             Script global + JS du wiki (js/wiki/)
 ├── scripts/                        Build, vérification des liens, et leurs tests
 │   └── lib/                        Prérendu wiki, images, Pagefind, templates
 ├── wiki/                           Pages wiki statiques (générées, ne pas toucher)

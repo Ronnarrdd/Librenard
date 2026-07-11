@@ -1,11 +1,14 @@
 // Prerendu statique du wiki Bookstack.
 //
-// Pourquoi : le wiki SPA route par hash (#/book/...), invisible pour les
-// moteurs de recherche. Ce module interroge l'API Bookstack au build et
-// genere une page HTML statique par livre et par article :
+// Ce module interroge l'API Bookstack au build et genere une page HTML
+// statique par livre et par article :
 //   wiki/<book-slug>.html            sommaire d'un livre
 //   wiki/<book-slug>/<page-slug>.html  article
-// Ces pages sont les URLs canoniques du contenu (sitemap + canonical SPA).
+// Ces pages sont les URLs canoniques et partageables du contenu : elles
+// portent les meta OpenGraph/Twitter (titre, description, couverture du
+// livre) lisibles par les crawlers de preview des reseaux sociaux, la ou
+// les anciennes routes hash (#/book/...) ne montraient que les meta
+// generiques de wiki.html. js/wiki/main.js redirige ces routes ici.
 //
 // Le dossier wiki/ est entierement regenere a chaque build (supprime puis
 // reecrit) : il ne doit contenir aucun fichier edite a la main.
@@ -78,8 +81,8 @@ async function apiFetch(apiPath) {
 // ---------- COLLECTE ----------
 
 // Recupere les livres publies (etageres site.wikiShelves) avec le detail de
-// leur contenu et le HTML de chaque page, dans l'ordre d'affichage du SPA
-// (tri par derniere mise a jour, comme js/wiki/api.js).
+// leur contenu et le HTML de chaque page, tries par derniere mise a jour
+// (meme ordre que la grille re-rendue au runtime par js/wiki/api.js getBooks).
 // Retourne { books, booksByShelf } ; chaque livre porte shelfRef (label +
 // pageHref de la page du site qui liste son etagere), pour le fil d'Ariane.
 export async function fetchWikiContent() {
@@ -114,8 +117,7 @@ export async function fetchWikiContent() {
         const detail = await apiFetch(`/books/${book.id}`);
         Object.assign(book, detail);
 
-        // Aplatit livre -> [pages], en gardant la reference du chapitre,
-        // meme convention que flattenPages (js/wiki/api.js).
+        // Aplatit livre -> [pages], en gardant la reference du chapitre.
         const flat = [];
         (book.contents || []).forEach(item => {
             if (item.type === 'page') flat.push({ ...item, chapter: null });
@@ -175,9 +177,9 @@ function breadcrumbHtml(prefix, shelfRef, items) {
 
 const EMPTY_COVER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>`;
 
-// Meme table des matieres laterale que renderTocSidebar (js/wiki/article.js),
-// mais rendue au build. href encode pour que la navigation par ancre native
-// (sans JS) retombe sur l'id literal, y compris les ids Bookstack contenant "%".
+// Table des matieres laterale rendue au build. href encode pour que la
+// navigation par ancre native (sans JS) retombe sur l'id literal, y compris
+// les ids Bookstack contenant "%".
 function tocSidebarHtml(allHeadings) {
     // Les titres vides (artefacts d'edition Bookstack) n'ont rien a faire dans la TOC.
     const headings = allHeadings.filter(h => h.text);

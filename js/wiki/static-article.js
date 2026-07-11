@@ -2,11 +2,11 @@
 // (wiki/<book-slug>/<page-slug>.html, generees par scripts/lib/wiki-prerender.mjs).
 //
 // Le contenu et la table des matieres sont deja dans le HTML : ce module
-// n'ajoute que le confort de lecture du SPA (colorisation syntaxique, bouton
-// copier, zoom des images, barre de progression, surlignage TOC au scroll).
-// Sans JS, la page reste entierement lisible et navigable.
+// n'ajoute que le confort de lecture (colorisation syntaxique, bouton copier,
+// zoom des images, barre de progression, surlignage TOC au scroll,
+// permaliennes sur les titres). Sans JS, la page reste lisible et navigable.
 
-import { highlightArticleCode, startReadingProgress, buildToc, setupTocObserver } from './article.js';
+import { highlightArticleCode, startReadingProgress, buildToc, setupTocObserver, setupHeadingAnchors } from './article.js';
 import { setupImageLightbox } from './lightbox.js';
 import { initDyslexicMode } from './dyslexic.js';
 import { initWikiSearch } from './search.js';
@@ -24,10 +24,14 @@ function init() {
     // La sidebar TOC est deja rendue : on ne fait que brancher l'observer
     // de scroll et le smooth-scroll sur les liens existants.
     const slot = document.getElementById('wiki-toc-slot');
+    const items = buildToc(articleBody);
     if (slot && slot.querySelector('[data-toc-link]')) {
-        const items = buildToc(articleBody);
         setupTocObserver(items, slot);
     }
+
+    // Permaliennes "#" sur les h2/h3. APRES buildToc (ids garantis, et le "#"
+    // ne se retrouve pas dans les libelles de la TOC laterale).
+    setupHeadingAnchors(articleBody);
 }
 
 if (document.readyState === 'loading') {

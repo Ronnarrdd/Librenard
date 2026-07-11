@@ -10,8 +10,6 @@ export const WIKI_CONFIG = {
 
 export const cache = {
     books: null,
-    booksBySlug: {},
-    pageById: {},
     shelvesBySlug: {},
     recentPages: null,
     readingTimes: null
@@ -35,26 +33,7 @@ export async function getBooks() {
     if (cache.books) return cache.books;
     const json = await apiFetch(`/books?count=200&sort=-updated_at`);
     cache.books = json.data || [];
-    cache.books.forEach(b => { cache.booksBySlug[b.slug] = b; });
     return cache.books;
-}
-
-export async function getBookBySlug(slug) {
-    await getBooks();
-    const book = cache.booksBySlug[slug];
-    if (!book) throw new Error(`Livre introuvable : ${slug}`);
-    if (!book.contents) {
-        const detail = await apiFetch(`/books/${book.id}`);
-        Object.assign(book, detail);
-    }
-    return book;
-}
-
-export async function getPage(pageId) {
-    if (cache.pageById[pageId]) return cache.pageById[pageId];
-    const page = await apiFetch(`/pages/${pageId}`);
-    cache.pageById[pageId] = page;
-    return page;
 }
 
 export async function getShelfBookIds(shelfSlug) {
@@ -116,18 +95,4 @@ export async function getReadingTimes() {
         cache.readingTimes = {};
     }
     return cache.readingTimes;
-}
-
-export function flattenPages(book) {
-    const items = [];
-    (book.contents || []).forEach(item => {
-        if (item.type === 'page') {
-            items.push({ ...item, chapter: null });
-        } else if (item.type === 'chapter') {
-            (item.pages || []).forEach(p => {
-                items.push({ ...p, chapter: item });
-            });
-        }
-    });
-    return items;
 }

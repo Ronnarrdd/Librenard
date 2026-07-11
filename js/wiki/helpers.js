@@ -1,6 +1,4 @@
-// Helpers purs (formatage, echappement, sanitation, slugify, reecriture des liens wiki).
-
-import { WIKI_CONFIG } from './api.js';
+// Helpers purs (formatage, echappement, sanitation, slugify, routes wiki).
 
 export function escapeHtml(s) {
     return String(s ?? '')
@@ -50,6 +48,40 @@ export function formatRelativeDate(iso) {
     return `il y a ${years} an${years > 1 ? 's' : ''}`;
 }
 
+// Chemin (relatif a la racine du site) de la page statique prerendue par
+// scripts/lib/wiki-prerender.mjs pour un livre ou un article, avec ancre de
+// section optionnelle. C'est l'URL canonique et partageable du contenu :
+// les routes hash du SPA ne portent pas de meta OpenGraph pour les crawlers.
+export function staticWikiPath(bookSlug, pageSlug = null, sectionId = null) {
+    const path = pageSlug
+        ? `wiki/${encodeURIComponent(bookSlug)}/${encodeURIComponent(pageSlug)}.html`
+        : `wiki/${encodeURIComponent(bookSlug)}.html`;
+    // Ancre encodee pour que la navigation native retombe sur l'id literal,
+    // y compris les ids Bookstack contenant "%" (meme convention que la TOC
+    // prerendue de wiki-prerender.mjs).
+    return sectionId ? `${path}#${encodeURIComponent(sectionId)}` : path;
+}
+
+// Analyse une route hash du SPA. Formes reconnues :
+//   #/                          -> { name: 'list' }
+//   #/book/<b>                  -> { name: 'book', bookSlug }
+//   #/book/<b>/page/<p>         -> { name: 'page', bookSlug, pageSlug }
+//   #/book/<b>/page/<p>/h/<id>  -> idem + sectionSlug (deep-link de section)
+// Toute route inconnue retombe sur la liste.
+export function parseWikiHash(rawHash) {
+    const raw = String(rawHash ?? '').replace(/^#\/?/, '');
+    if (!raw) return { name: 'list' };
+    const parts = raw.split('/').filter(Boolean).map(decodeURIComponent);
+    if (parts[0] === 'book' && parts[1]) {
+        if (parts[2] === 'page' && parts[3]) {
+            const sectionSlug = (parts[4] === 'h' && parts[5]) ? parts[5] : null;
+            return { name: 'page', bookSlug: parts[1], pageSlug: parts[3], sectionSlug };
+        }
+        return { name: 'book', bookSlug: parts[1] };
+    }
+    return { name: 'list' };
+}
+
 export function slugify(text) {
     return String(text)
         .normalize('NFD')
@@ -59,38 +91,4 @@ export function slugify(text) {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '')
         .substring(0, 80) || 'section';
-}
-
-// Remplace toutes les URL Bookstack internes par des ancres hash (routage SPA)
-export function rewriteWikiLinks(html) {
-    const base = escapeRegex(WIKI_CONFIG.baseUrl.replace(/\/$/, ''));
-    // page : /books/{b}/page/{p}
-    html = html.replace(
-        new RegExp(`${base}/books/([\\w-]+)/page/([\\w-]+)`, 'g'),
-        (_, b, p) => `#/book/${b}/page/${p}`
-    );
-    // chapitre : /books/{b}/chapter/{c}  -> renvoie au sommaire du livre
-    html = html.replace(
-        new RegExp(`${base}/books/([\\w-]+)/chapter/[\\w-]+`, 'g'),
-        (_, b) => `#/book/${b}`
-    );
-    // livre : /books/{b}
-    html = html.replace(
-        new RegExp(`${base}/books/([\\w-]+)(?!/)`, 'g'),
-        (_, b) => `#/book/${b}`
-    );
-    return html;
-}
-
-// Transforme une URL Bookstack en route hash SPA. Retourne null si inconnue.
-export function bookstackUrlToHash(url) {
-    if (!url) return null;
-    const base = escapeRegex(WIKI_CONFIG.baseUrl.replace(/\/$/, ''));
-    let m = url.match(new RegExp(`${base}/books/([\\w-]+)/page/([\\w-]+)`));
-    if (m) return `#/book/${m[1]}/page/${m[2]}`;
-    m = url.match(new RegExp(`${base}/books/([\\w-]+)/chapter/[\\w-]+`));
-    if (m) return `#/book/${m[1]}`;
-    m = url.match(new RegExp(`${base}/books/([\\w-]+)`));
-    if (m) return `#/book/${m[1]}`;
-    return null;
 }
