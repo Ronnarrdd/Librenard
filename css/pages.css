@@ -125,7 +125,7 @@
 
 .tool-row {
     display: grid;
-    grid-template-columns: 210px 1fr;
+    grid-template-columns: 180px 1fr;
     gap: 2.5rem;
     align-items: center;
     background: var(--bg-card);
@@ -154,7 +154,7 @@
 }
 
 .tool-row:nth-child(even) {
-    grid-template-columns: 1fr 210px;
+    grid-template-columns: 1fr 180px;
 }
 
 .tool-row:nth-child(even) .tool-row-media {
@@ -187,21 +187,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--pastel-cream), var(--pastel-peach));
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    box-shadow: 0 6px 14px rgba(255, 154, 107, 0.15);
     position: relative;
     z-index: 2;
 }
 
-.dark-mode .tool-row-media {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-}
-
 .tool-row-media img {
-    width: 120px;
-    height: 120px;
+    width: 160px;
+    height: 160px;
     object-fit: contain;
 }
 
