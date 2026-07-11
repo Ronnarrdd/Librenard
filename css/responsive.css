@@ -24,6 +24,14 @@
         grid-template-columns: 1fr;
     }
 
+    .license-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .about-chips {
+        justify-content: center;
+    }
+
     .wiki-feed-list {
         grid-template-columns: 1fr;
     }
