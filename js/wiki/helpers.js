@@ -95,6 +95,83 @@ export function slugify(text) {
         .substring(0, 80) || 'section';
 }
 
+// ---------- CATEGORIES (tags Bookstack) ----------
+
+// Ordre d'affichage preferentiel des categories connues. Ce n'est PAS un
+// filtre : un tag inedit dans Bookstack cree sa propre section, affichee
+// apres celles-ci en ordre alphabetique. Rien a modifier ici pour ajouter
+// une categorie.
+export const PREFERRED_CATEGORY_ORDER = [
+    'Linux',
+    'Windows',
+    'Réseau',
+    'Matériel & stockage',
+    'Supervision',
+    'Bidouilles'
+];
+
+// Groupe des livres sans tag, toujours affiche en dernier.
+export const UNCATEGORIZED_LABEL = 'Autres';
+
+// Categorie d'un livre = son premier tag Bookstack. Tolere les deux formats
+// de tag : nom seul ("Linux") ou nom vide avec valeur (value = "Linux").
+export function bookCategory(tags) {
+    for (const tag of tags || []) {
+        const label = String(tag?.name ?? '').trim() || String(tag?.value ?? '').trim();
+        if (label) return label;
+    }
+    return null;
+}
+
+// Cle de filtre d'une categorie (attribut data-category des cartes et des
+// puces) : slug stable, insensible a la casse et aux accents. Un livre sans
+// categorie retombe sur la cle du groupe "Autres".
+export function categoryKey(category) {
+    return slugify(String(category ?? '').trim() || UNCATEGORIZED_LABEL);
+}
+
+// Liste des puces de filtre pour un jeu de livres : [{ key, label }] dans
+// l'ordre d'affichage (preferentiel, puis nouvelles categories en
+// alphabetique, puis "Autres"). Vide s'il y a moins de deux categories :
+// filtrer n'aurait alors aucun sens, on n'affiche pas de puces.
+export function categoryFilters(books, getCategory) {
+    const groups = groupBooksByCategory(books, getCategory);
+    if (groups.length < 2) return [];
+    return groups.map(g => ({ key: categoryKey(g.category), label: g.category }));
+}
+
+// Regroupe des livres par categorie. getCategory(book) retourne le label
+// (ou null/undefined -> groupe "Autres"). La cle de regroupement est
+// normalisee via slugify : "Réseau", "reseau" et "RESEAU" fusionnent.
+// Retour : [{ category, books }] dans l'ordre d'affichage final
+// (preferentiel, puis nouvelles categories en alphabetique, puis "Autres").
+export function groupBooksByCategory(books, getCategory) {
+    const groups = new Map();
+    for (const book of books || []) {
+        const raw = String(getCategory(book) ?? '').trim() || UNCATEGORIZED_LABEL;
+        const key = slugify(raw);
+        if (!groups.has(key)) {
+            // Label affiche : celui de la liste preferentielle si la categorie
+            // y figure (graphie canonique), sinon le tag tel que saisi.
+            const preferred = PREFERRED_CATEGORY_ORDER.find(c => slugify(c) === key);
+            groups.set(key, { key, category: preferred ?? raw, books: [] });
+        }
+        groups.get(key).books.push(book);
+    }
+
+    const preferredKeys = PREFERRED_CATEGORY_ORDER.map(slugify);
+    const uncategorizedKey = slugify(UNCATEGORIZED_LABEL);
+    const rank = (key) => {
+        if (key === uncategorizedKey) return Number.MAX_SAFE_INTEGER;
+        const i = preferredKeys.indexOf(key);
+        return i >= 0 ? i : preferredKeys.length;
+    };
+
+    return [...groups.values()]
+        .sort((a, b) => rank(a.key) - rank(b.key) || a.category.localeCompare(b.category, 'fr'))
+        .map(({ category, books: groupBooks }) => ({ category, books: groupBooks }));
+}
+
 // Remplace les URL Bookstack internes par des ancres hash (routage SPA).
 export function rewriteWikiLinks(html) {
     const base = escapeRegex(WIKI_CONFIG.baseUrl.replace(/\/$/, ''));

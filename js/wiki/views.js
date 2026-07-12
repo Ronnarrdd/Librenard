@@ -1,8 +1,9 @@
 // Rendu des trois vues principales du wiki (liste, livre, article)
 // + composants de rendu partages (carte de livre, fil d'Ariane, ecran de chargement).
 
-import { getBookBySlug, getPage, getVisibleBooks, getReadingTimes, flattenPages } from './api.js';
-import { escapeHtml, formatRelativeDate, rewriteWikiLinks } from './helpers.js';
+import { getBookBySlug, getPage, getVisibleBooks, getReadingTimes, getBookCategories, flattenPages } from './api.js';
+import { escapeHtml, formatRelativeDate, rewriteWikiLinks, categoryKey } from './helpers.js';
+import { filterChipsHtml } from './filters.js';
 import { staticWikiUrl, updateMeta, resetMeta, stripHtmlToText, DEFAULT_META } from './meta.js';
 import {
     highlightArticleCode,
@@ -18,7 +19,7 @@ import { setupImageLightbox } from './lightbox.js';
 
 // ---------- COMPOSANTS PARTAGES ----------
 
-export function bookCardHtml(book, readingMinutes = null) {
+export function bookCardHtml(book, readingMinutes = null, category = null) {
     const hasCover = book.cover && book.cover.url;
     const coverStyle = hasCover ? `style="background-image: url('${escapeHtml(book.cover.url)}')"` : '';
     const coverClass = hasCover ? 'book-card-cover' : 'book-card-cover book-card-cover-empty';
@@ -30,7 +31,7 @@ export function bookCardHtml(book, readingMinutes = null) {
         ? `<span class="book-card-reading-time" title="Temps de lecture estimé">~${readingMinutes} min<span class="sr-only"> de lecture</span></span>`
         : '';
     return `
-        <a class="book-card" href="#/book/${encodeURIComponent(book.slug)}">
+        <a class="book-card" href="#/book/${encodeURIComponent(book.slug)}" data-category="${categoryKey(category)}">
             <div class="${coverClass}" ${coverStyle} aria-hidden="true">
                 ${hasCover ? '' : `
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -79,11 +80,12 @@ export function renderLoading(view) {
 
 export async function viewList(view) {
     const shelfSlug = view.dataset.shelf || null;
-    // Temps de lecture precalcules au build (best-effort : {} si absent),
-    // charges en parallele de la liste des livres.
-    const [books, readingTimes] = await Promise.all([
+    // Temps de lecture et categories precalcules au build (best-effort :
+    // {} si absents), charges en parallele de la liste des livres.
+    const [books, readingTimes, categories] = await Promise.all([
         getVisibleBooks(shelfSlug),
-        getReadingTimes()
+        getReadingTimes(),
+        getBookCategories()
     ]);
     if (!books.length) {
         view.innerHTML = `<p class="wiki-empty">Aucun livre pour le moment.</p>`;
@@ -91,7 +93,14 @@ export async function viewList(view) {
         resetMeta();
         return;
     }
-    view.innerHTML = `<div class="books-grid">${books.map(b => bookCardHtml(b, readingTimes[b.slug])).join('')}</div>`;
+
+    // Meme structure que la grille statique injectee au build
+    // (scripts/build-site.mjs wikiGridHtml) : puces de filtre par categorie
+    // au-dessus d'une grille plate. filters.js (delegation globale) rend les
+    // puces interactives, y compris apres ce re-rendu.
+    const chips = filterChipsHtml(books, b => categories[b.slug]);
+    const grid = `<div class="books-grid">${books.map(b => bookCardHtml(b, readingTimes[b.slug], categories[b.slug])).join('')}</div>`;
+    view.innerHTML = `${chips}${grid}`;
     renderBreadcrumb([]);
     // Vue racine : on revient aux meta par defaut de wiki.html
     resetMeta();

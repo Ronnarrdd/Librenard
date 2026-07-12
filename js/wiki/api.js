@@ -14,7 +14,8 @@ export const cache = {
     pageById: {},
     shelvesBySlug: {},
     recentPages: null,
-    readingTimes: null
+    readingTimes: null,
+    bookCategories: null
 };
 
 export function apiFetch(path) {
@@ -116,6 +117,21 @@ export async function getReadingTimes() {
         cache.readingTimes = {};
     }
     return cache.readingTimes;
+}
+
+// Categories par livre { slug: categorie }, precalculees au build depuis les
+// tags Bookstack (scripts/lib/wiki-prerender.mjs ecrit wiki/book-categories.json,
+// la liste /books de l'API n'exposant pas les tags). Best-effort : si le
+// fichier manque, retourne {} et la grille s'affiche a plat, sans groupes.
+export async function getBookCategories() {
+    if (cache.bookCategories) return cache.bookCategories;
+    try {
+        const res = await fetch(new URL('wiki/book-categories.json', document.baseURI));
+        cache.bookCategories = res.ok ? await res.json() : {};
+    } catch (_) {
+        cache.bookCategories = {};
+    }
+    return cache.bookCategories;
 }
 
 export function flattenPages(book) {

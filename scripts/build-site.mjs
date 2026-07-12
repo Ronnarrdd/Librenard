@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { formatContent } from './lib/format-html.mjs';
 import { site, withBasePath, prefixFor, renderDocument, escapeXml, fallbackAttr } from './lib/site-template.mjs';
 import { prerenderWiki, bookCardStaticHtml } from './lib/wiki-prerender.mjs';
+import { categoryFilters } from './lib/wiki-static.mjs';
+import { escapeHtml } from '../js/wiki/helpers.js';
 import { setupVendorAssets } from './lib/vendor-assets.mjs';
 import { buildPagefindIndex } from './lib/pagefind-index.mjs';
 
@@ -53,12 +55,12 @@ const pages = [
         output: 'wiki.html',
         navKey: 'wiki',
         title: 'Wiki - Librenard',
-        description: "Wiki Librenard : tutoriels, guides et notes techniques sur le logiciel libre, l'auto-hébergement et les outils numériques respectueux de la vie privée.",
-        keywords: 'wiki, Bookstack, tutoriels, logiciel libre, auto-hébergement, guides, documentation',
+        description: "Notes de formation de technicien d'assistance informatique, partagées pour aider à réviser et enrichies au fil des apprentissages. Wiki Librenard.",
+        keywords: 'wiki, Bookstack, notes, formation, technicien informatique, révision, tutoriels, documentation',
         ogTitle: 'Wiki - Librenard',
-        ogDescription: "Tutoriels et guides sur le logiciel libre, l'auto-hébergement et les outils numériques respectueux de la vie privée.",
+        ogDescription: "Mes notes de formation, d'abord pour mes collègues — mises en ligne pour d'autres, et toujours enrichies.",
         twitterTitle: 'Wiki - Librenard',
-        twitterDescription: "Tutoriels et guides sur le libre, l'auto-hébergement et la vie privée numérique.",
+        twitterDescription: "Notes de formation partagées et enrichies au fil des apprentissages.",
         scripts: [
             { src: 'js/script.js' },
             { type: 'module', src: 'js/wiki/main.js' }
@@ -172,15 +174,26 @@ function normalizePageContent(content, page) {
 }
 
 // Remplace le contenu de la <section id="wiki-view"> par la grille de livres
-// prerendue : liens reels crawlables + contenu visible sans JS. Au chargement,
-// js/wiki/main.js re-rend la meme grille depuis l'API (dates relatives, frais).
+// prerendue : liens reels crawlables + contenu visible sans JS. Les puces de
+// filtre par categorie (tags Bookstack) sont generees au-dessus de la grille ;
+// js/wiki/filters.js les rend interactives. Sans JS elles sont inertes et la
+// grille complete reste visible. Au chargement, js/wiki/main.js re-rend la
+// meme structure depuis l'API (dates relatives, frais).
 // IMPORTANT : #wiki-view doit etre une <section> ne contenant aucune autre
 // section (la regex non-greedy s'arrete au premier </section> rencontre).
+function wikiGridHtml(books) {
+    const filters = categoryFilters(books, b => b.category);
+    const chips = filters.length ? `<div class="wiki-filters" role="group" aria-label="Filtrer les livres par catégorie">
+<button type="button" class="wiki-filter-chip active" data-category="" aria-pressed="true">Tout</button>
+${filters.map(f => `<button type="button" class="wiki-filter-chip" data-category="${f.key}" aria-pressed="false">${escapeHtml(f.label)}</button>`).join('\n')}
+</div>\n` : '';
+    return `${chips}<div class="books-grid">\n${books.map(bookCardStaticHtml).join('\n')}\n</div>`;
+}
+
 function injectWikiGrid(content, books, output) {
-    const grid = `<div class="books-grid">\n${books.map(bookCardStaticHtml).join('\n')}\n</div>`;
     const replaced = content.replace(
         /(<section id="wiki-view"[^>]*>)[\s\S]*?(<\/section>)/,
-        `$1\n${grid}\n$2`
+        `$1\n${wikiGridHtml(books)}\n$2`
     );
     if (replaced === content) throw new Error(`Section #wiki-view introuvable dans ${output}.`);
     return replaced;

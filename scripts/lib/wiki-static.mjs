@@ -2,9 +2,27 @@
 // Testes par wiki-static.test.mjs. Toute la logique deterministe du prerendu
 // vit ici ; wiki-prerender.mjs ne fait que fetch + assemblage + ecriture.
 
-import { slugify, escapeRegex } from '../../js/wiki/helpers.js';
+import {
+    slugify,
+    escapeRegex,
+    bookCategory,
+    categoryKey,
+    categoryFilters,
+    groupBooksByCategory,
+    PREFERRED_CATEGORY_ORDER,
+    UNCATEGORIZED_LABEL
+} from '../../js/wiki/helpers.js';
 
-export { slugify, escapeRegex };
+export {
+    slugify,
+    escapeRegex,
+    bookCategory,
+    categoryKey,
+    categoryFilters,
+    groupBooksByCategory,
+    PREFERRED_CATEGORY_ORDER,
+    UNCATEGORIZED_LABEL
+};
 
 // ---------- CHEMINS DES PAGES STATIQUES ----------
 // Un livre  -> wiki/<book-slug>.html

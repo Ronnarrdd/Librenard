@@ -15,19 +15,19 @@
                 } catch (e) {}
             })();
         </script>
-    <meta name="description" content="Wiki Librenard : tutoriels, guides et notes techniques sur le logiciel libre, l'auto-hébergement et les outils numériques respectueux de la vie privée.">
-    <meta name="keywords" content="wiki, Bookstack, tutoriels, logiciel libre, auto-hébergement, guides, documentation">
+    <meta name="description" content="Notes de formation de technicien d'assistance informatique, partagées pour aider à réviser et enrichies au fil des apprentissages. Wiki Librenard.">
+    <meta name="keywords" content="wiki, Bookstack, notes, formation, technicien informatique, révision, tutoriels, documentation">
     <meta name="author" content="Nolann">
     <link rel="canonical" href="https://librenard.fr/site/wiki.html">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://librenard.fr/site/wiki.html">
     <meta property="og:title" content="Wiki - Librenard">
-    <meta property="og:description" content="Tutoriels et guides sur le logiciel libre, l'auto-hébergement et les outils numériques respectueux de la vie privée.">
+    <meta property="og:description" content="Mes notes de formation, d'abord pour mes collègues — mises en ligne pour d'autres, et toujours enrichies.">
     <meta property="og:image" content="https://librenard.fr/site/images/renard.webp">
     <meta property="og:locale" content="fr_FR">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Wiki - Librenard">
-    <meta name="twitter:description" content="Tutoriels et guides sur le libre, l'auto-hébergement et la vie privée numérique.">
+    <meta name="twitter:description" content="Notes de formation partagées et enrichies au fil des apprentissages.">
     <meta name="twitter:image" content="https://librenard.fr/site/images/renard.webp">
     <meta name="theme-color" content="#ff9a6b" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1f1813" media="(prefers-color-scheme: dark)">
@@ -64,9 +64,10 @@
         <header class="page-header wiki-hide-in-view">
             <h1>Le <span class="accent">wiki</span></h1>
             <p>
-                Mes notes, tutoriels et découvertes sur le logiciel libre, l'auto-hébergement
-                et les outils numériques qui respectent votre vie privée. Tout est rangé par
-                livres thématiques — piochez celui qui vous intéresse !
+                Coucou ! Mes notes de formation de technicien d'assistance informatique,
+                d'abord pour mes collègues. Je les ai mises en ligne parce qu'elles peuvent
+                aider d'autres personnes — et je continue à les compléter avec ce que
+                j'apprends au quotidien.
             </p>
         </header>
 
@@ -86,154 +87,158 @@
         </nav>
 
         <section id="wiki-view" class="wiki-view" data-shelf="ressources-references">
+            <div class="wiki-filters" role="group" aria-label="Filtrer les livres par catégorie">
+                <button type="button" class="wiki-filter-chip active" data-category="" aria-pressed="true">Tout</button>
+                <button type="button" class="wiki-filter-chip" data-category="linux" aria-pressed="false">Linux</button>
+                <button type="button" class="wiki-filter-chip" data-category="windows" aria-pressed="false">Windows</button>
+                <button type="button" class="wiki-filter-chip" data-category="reseau" aria-pressed="false">Réseau</button>
+                <button type="button" class="wiki-filter-chip" data-category="materiel-stockage" aria-pressed="false">Matériel &amp; stockage</button>
+                <button type="button" class="wiki-filter-chip" data-category="supervision" aria-pressed="false">Supervision</button>
+            </div>
             <div class="books-grid">
-                <a class="book-card" href="wiki/bases-de-linux.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/chatgpt-image-22-avr-2026-20-38-55.webp')" aria-hidden="true"></div>
-                    <span class="book-card-reading-time" title="Temps de lecture estimé">~31 min<span class="sr-only"> de lecture</span></span>
-                    <div class="book-card-body">
-                        <h2 class="book-card-title">Bases de Linux</h2>
-
-                        <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 22 avril 2026</span>
-                            <span class="book-card-arrow" aria-hidden="true">→</span>
-                        </div>
-                    </div>
-                </a>
-                <a class="book-card" href="wiki/systeme-de-fichier-windows.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-gjl0o6gjl0o6gjl0.webp')" aria-hidden="true"></div>
-                    <span class="book-card-reading-time" title="Temps de lecture estimé">~10 min<span class="sr-only"> de lecture</span></span>
-                    <div class="book-card-body">
-                        <h2 class="book-card-title">Système de fichier Windows</h2>
-                        <p class="book-card-description">Coucou tout le monde ! Voici un petit récap de ce qu&#039;on a appris sur le système de fichiers Windows. J&#039;ai rassemblé ces notes pour qu&#039;on puisse s&#039;y référer facilement en cas de besoin. Que ce soit pour rafraîchir notre mémoire sur l&#039;éditeur de registre, se souvenir de comment fonctionne racine du disque C:\, ou pour naviguer dans le dossier Utilisateurs, tout est là. Gardez-les sous la main pour la prochaine fois où vous aurez un trou de mémoire sur le système de fichier Windows !</p>
-                        <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
-                            <span class="book-card-arrow" aria-hidden="true">→</span>
-                        </div>
-                    </div>
-                </a>
-                <a class="book-card" href="wiki/bios-et-uefi.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-tkv3aetkv3aetkv3.webp')" aria-hidden="true"></div>
+                <a class="book-card" href="wiki/installation-de-centreon.html" data-category="supervision">
+                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-s5caq0s5caq0s5ca.webp')" aria-hidden="true"></div>
                     <span class="book-card-reading-time" title="Temps de lecture estimé">~7 min<span class="sr-only"> de lecture</span></span>
                     <div class="book-card-body">
-                        <h2 class="book-card-title">BIOS et UEFI</h2>
-                        <p class="book-card-description">Bonjour à tous ! Aujourd&#039;hui, nous allons revoir ce qu’on a vu en cours par rapport au BIOS et à l’UEFI</p>
+                        <h2 class="book-card-title">Installation de Centreon</h2>
+                        <p class="book-card-description">Centreon est une solution logicielle de supervision informatique open source.
+                            Elle permet de surveiller et de contrôler les infrastructures informatiques, incluant les serveurs, les applications, les réseaux et les bases de données.
+                            Centreon peremets d&#039;avoir une vue centralisée des performances ainsi que de la disponibilité des systèmes, permettant ainsi les entreprises a détecter et résoudre rapidement les problèmes potentiels.</p>
                         <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
                             <span class="book-card-arrow" aria-hidden="true">→</span>
                         </div>
                     </div>
                 </a>
-                <a class="book-card" href="wiki/introduction-aux-adresses-ip.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-dmxngqdmxngqdmxn.webp')" aria-hidden="true"></div>
-                    <span class="book-card-reading-time" title="Temps de lecture estimé">~9 min<span class="sr-only"> de lecture</span></span>
-                    <div class="book-card-body">
-                        <h2 class="book-card-title">Introduction aux Adresses IP</h2>
-                        <p class="book-card-description">Coucou tout le monde ! Voici un petit récap de ce qu’on a appris en cours sur les Adresses IP</p>
-                        <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
-                            <span class="book-card-arrow" aria-hidden="true">→</span>
-                        </div>
-                    </div>
-                </a>
-                <a class="book-card" href="wiki/le-raid.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-ckwwovckwwovckww.webp')" aria-hidden="true"></div>
-                    <span class="book-card-reading-time" title="Temps de lecture estimé">~4 min<span class="sr-only"> de lecture</span></span>
-                    <div class="book-card-body">
-                        <h2 class="book-card-title">Le RAID</h2>
-                        <p class="book-card-description">Le RAID est une technologie de stockage qui combine plusieurs disques durs physiques en un seul gros disque “logique”. L&#039;idée est d&#039;améliorer la performance et/ou la fiabilité des données. Voici quelques-uns des avantages clés du RAID :
-                            Amélioration des performances : en répartissant les données sur plusieurs disques, le RAID peut accélérer la lecture et l&#039;écriture des données.Redondance des données : certaines configurations RAID permettent de conserver les données même en cas de panne d&#039;un ou plusieurs disques. Si un disque venait a tomber en panne, cela rajoute une sécurité supplémentaire pour ne rien perdre</p>
-                        <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
-                            <span class="book-card-arrow" aria-hidden="true">→</span>
-                        </div>
-                    </div>
-                </a>
-                <a class="book-card" href="wiki/restaurer-la-partition-efi-sur-windows-1011.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-lf5qg3lf5qg3lf5q.webp')" aria-hidden="true"></div>
-                    <span class="book-card-reading-time" title="Temps de lecture estimé">~6 min<span class="sr-only"> de lecture</span></span>
-                    <div class="book-card-body">
-                        <h2 class="book-card-title">Restaurer la partition EFI sur Windows 10/11</h2>
-                        <p class="book-card-description">Coucou ! Aujourd’hui nous allons revoir ensemble comment restaurer la partition EFI avec les outils disponible nativement avec Windows</p>
-                        <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
-                            <span class="book-card-arrow" aria-hidden="true">→</span>
-                        </div>
-                    </div>
-                </a>
-                <a class="book-card" href="wiki/utilisation-de-diskpart-dans-windows.html">
+                <a class="book-card" href="wiki/utilisation-de-diskpart-dans-windows.html" data-category="windows">
                     <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-phyi80phyi80phyi.webp')" aria-hidden="true"></div>
                     <span class="book-card-reading-time" title="Temps de lecture estimé">~4 min<span class="sr-only"> de lecture</span></span>
                     <div class="book-card-body">
                         <h2 class="book-card-title">Utilisation de DiskPart dans Windows</h2>
                         <p class="book-card-description">Coucou ! Nous allons ici revoir tout ce que l’on a vu en cours sur diskpart, diskpart est un outil de ligne de commande puissant intégré à Windows qui permet de gérer les disques, les partitions et les volumes de votre ordinateur. Nous allons découvrir comment l&#039;utiliser pour effectuer plusieurs tâches de gestion de disques.</p>
                         <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
                             <span class="book-card-arrow" aria-hidden="true">→</span>
                         </div>
                     </div>
                 </a>
-                <a class="book-card" href="wiki/mise-en-place-de-docker-sur-linux.html">
+                <a class="book-card" href="wiki/restaurer-la-partition-efi-sur-windows-1011.html" data-category="windows">
+                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-lf5qg3lf5qg3lf5q.webp')" aria-hidden="true"></div>
+                    <span class="book-card-reading-time" title="Temps de lecture estimé">~6 min<span class="sr-only"> de lecture</span></span>
+                    <div class="book-card-body">
+                        <h2 class="book-card-title">Restaurer la partition EFI sur Windows 10/11</h2>
+                        <p class="book-card-description">Coucou ! Aujourd’hui nous allons revoir ensemble comment restaurer la partition EFI avec les outils disponible nativement avec Windows</p>
+                        <div class="book-card-footer">
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
+                            <span class="book-card-arrow" aria-hidden="true">→</span>
+                        </div>
+                    </div>
+                </a>
+                <a class="book-card" href="wiki/le-raid.html" data-category="materiel-stockage">
+                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-ckwwovckwwovckww.webp')" aria-hidden="true"></div>
+                    <span class="book-card-reading-time" title="Temps de lecture estimé">~4 min<span class="sr-only"> de lecture</span></span>
+                    <div class="book-card-body">
+                        <h2 class="book-card-title">Le RAID</h2>
+                        <p class="book-card-description">Le RAID est une technologie de stockage qui combine plusieurs disques durs physiques en un seul gros disque “logique”. L&#039;idée est d&#039;améliorer la performance et/ou la fiabilité des données. Voici quelques-uns des avantages clés du RAID :
+                            Amélioration des performances : en répartissant les données sur plusieurs disques, le RAID peut accélérer la lecture et l&#039;écriture des données.
+                            Redondance des données : certaines configurations RAID permettent de conserver les données même en cas de panne d&#039;un ou plusieurs disques. Si un disque venait a tomber en panne, cela rajoute une sécurité supplémentaire pour ne rien perdre</p>
+                        <div class="book-card-footer">
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
+                            <span class="book-card-arrow" aria-hidden="true">→</span>
+                        </div>
+                    </div>
+                </a>
+                <a class="book-card" href="wiki/introduction-aux-adresses-ip.html" data-category="reseau">
+                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-dmxngqdmxngqdmxn.webp')" aria-hidden="true"></div>
+                    <span class="book-card-reading-time" title="Temps de lecture estimé">~9 min<span class="sr-only"> de lecture</span></span>
+                    <div class="book-card-body">
+                        <h2 class="book-card-title">Introduction aux Adresses IP</h2>
+                        <p class="book-card-description">Coucou tout le monde ! Voici un petit récap de ce qu’on a appris en cours sur les Adresses IP</p>
+                        <div class="book-card-footer">
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
+                            <span class="book-card-arrow" aria-hidden="true">→</span>
+                        </div>
+                    </div>
+                </a>
+                <a class="book-card" href="wiki/bios-et-uefi.html" data-category="materiel-stockage">
+                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-tkv3aetkv3aetkv3.webp')" aria-hidden="true"></div>
+                    <span class="book-card-reading-time" title="Temps de lecture estimé">~7 min<span class="sr-only"> de lecture</span></span>
+                    <div class="book-card-body">
+                        <h2 class="book-card-title">BIOS et UEFI</h2>
+                        <p class="book-card-description">Bonjour à tous ! Aujourd&#039;hui, nous allons revoir ce qu’on a vu en cours par rapport au BIOS et à l’UEFI</p>
+                        <div class="book-card-footer">
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
+                            <span class="book-card-arrow" aria-hidden="true">→</span>
+                        </div>
+                    </div>
+                </a>
+                <a class="book-card" href="wiki/systeme-de-fichier-windows.html" data-category="windows">
+                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-gjl0o6gjl0o6gjl0.webp')" aria-hidden="true"></div>
+                    <span class="book-card-reading-time" title="Temps de lecture estimé">~10 min<span class="sr-only"> de lecture</span></span>
+                    <div class="book-card-body">
+                        <h2 class="book-card-title">Système de fichier Windows</h2>
+                        <p class="book-card-description">Coucou tout le monde ! Voici un petit récap de ce qu&#039;on a appris sur le système de fichiers Windows. J&#039;ai rassemblé ces notes pour qu&#039;on puisse s&#039;y référer facilement en cas de besoin. Que ce soit pour rafraîchir notre mémoire sur l&#039;éditeur de registre, se souvenir de comment fonctionne racine du disque C:\, ou pour naviguer dans le dossier Utilisateurs, tout est là. Gardez-les sous la main pour la prochaine fois où vous aurez un trou de mémoire sur le système de fichier Windows !</p>
+                        <div class="book-card-footer">
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
+                            <span class="book-card-arrow" aria-hidden="true">→</span>
+                        </div>
+                    </div>
+                </a>
+                <a class="book-card" href="wiki/notions-reseau.html" data-category="reseau">
+                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-4y9qlf4y9qlf4y9q.webp')" aria-hidden="true"></div>
+                    <span class="book-card-reading-time" title="Temps de lecture estimé">~20 min<span class="sr-only"> de lecture</span></span>
+                    <div class="book-card-body">
+                        <h2 class="book-card-title">Notions Réseau</h2>
+                        <p class="book-card-description">Une petite collection de notions réseau que j’enrichis au fil de mes découvertes, surtout quand je tombe sur des sujets que j’ai envie de mieux comprendre au travail.</p>
+                        <div class="book-card-footer">
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
+                            <span class="book-card-arrow" aria-hidden="true">→</span>
+                        </div>
+                    </div>
+                </a>
+                <a class="book-card" href="wiki/glpi-exemple-de-pannes.html" data-category="supervision">
+                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-3qo4qa3qo4qa3qo4.webp')" aria-hidden="true"></div>
+                    <span class="book-card-reading-time" title="Temps de lecture estimé">~28 min<span class="sr-only"> de lecture</span></span>
+                    <div class="book-card-body">
+                        <h2 class="book-card-title">GLPI - Exemple de pannes</h2>
+                        <p class="book-card-description">Une liste de pannes informatiques courantes, abordées pendant ma formation, avec les premières vérifications à effectuer pour identifier et résoudre le problème.</p>
+                        <div class="book-card-footer">
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
+                            <span class="book-card-arrow" aria-hidden="true">→</span>
+                        </div>
+                    </div>
+                </a>
+                <a class="book-card" href="wiki/mise-en-place-de-docker-sur-linux.html" data-category="linux">
                     <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-cgbr82cgbr82cgbr.webp')" aria-hidden="true"></div>
                     <span class="book-card-reading-time" title="Temps de lecture estimé">~7 min<span class="sr-only"> de lecture</span></span>
                     <div class="book-card-body">
                         <h2 class="book-card-title">Mise en place de Docker sur Linux</h2>
                         <p class="book-card-description">Docker est une plateforme de conteneurisation qui encapsule des applications et leurs dépendances dans des conteneurs, assurant une portabilité et une cohérence entre différents environnements. Il utilise des images pour créer ces conteneurs isolés, facilitant le développement, le test et le déploiement d&#039;applications. Docker simplifie la gestion des applications en rendant leur déploiement rapide et fiable, quel que soit l&#039;environnement cible.</p>
                         <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
                             <span class="book-card-arrow" aria-hidden="true">→</span>
                         </div>
                     </div>
                 </a>
-                <a class="book-card" href="wiki/glpi-exemple-de-pannes.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-3qo4qa3qo4qa3qo4.webp')" aria-hidden="true"></div>
-                    <span class="book-card-reading-time" title="Temps de lecture estimé">~28 min<span class="sr-only"> de lecture</span></span>
+                <a class="book-card" href="wiki/bases-de-linux.html" data-category="linux">
+                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/chatgpt-image-22-avr-2026-20-38-55.webp')" aria-hidden="true"></div>
+                    <span class="book-card-reading-time" title="Temps de lecture estimé">~31 min<span class="sr-only"> de lecture</span></span>
                     <div class="book-card-body">
-                        <h2 class="book-card-title">GLPI - Exemple de pannes</h2>
-
+                        <h2 class="book-card-title">Bases de Linux</h2>
+                        <p class="book-card-description">Un guide simple pour découvrir Linux, comprendre son fonctionnement et apprendre les bases essentielles pour bien débuter.</p>
                         <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
-                            <span class="book-card-arrow" aria-hidden="true">→</span>
-                        </div>
-                    </div>
-                </a>
-                <a class="book-card" href="wiki/mise-en-place-de-glpi-sous-debian.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-w7zgcaw7zgcaw7zg.webp')" aria-hidden="true"></div>
-                    <span class="book-card-reading-time" title="Temps de lecture estimé">~12 min<span class="sr-only"> de lecture</span></span>
-                    <div class="book-card-body">
-                        <h2 class="book-card-title">Mise en place de GLPI sous Debian</h2>
-
-                        <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
-                            <span class="book-card-arrow" aria-hidden="true">→</span>
-                        </div>
-                    </div>
-                </a>
-                <a class="book-card" href="wiki/installation-de-centreon.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-s5caq0s5caq0s5ca.webp')" aria-hidden="true"></div>
-                    <span class="book-card-reading-time" title="Temps de lecture estimé">~7 min<span class="sr-only"> de lecture</span></span>
-                    <div class="book-card-body">
-                        <h2 class="book-card-title">Installation de Centreon</h2>
-                        <p class="book-card-description">Centreon est une solution logicielle de supervision informatique open source.Elle permet de surveiller et de contrôler les infrastructures informatiques, incluant les serveurs, les applications, les réseaux et les bases de données.Centreon peremets d&#039;avoir une vue centralisée des performances ainsi que de la disponibilité des systèmes, permettant ainsi les entreprises a détecter et résoudre rapidement les problèmes potentiels.</p>
-                        <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
-                            <span class="book-card-arrow" aria-hidden="true">→</span>
-                        </div>
-                    </div>
-                </a>
-                <a class="book-card" href="wiki/notions-reseau.html">
-                    <div class="book-card-cover" style="background-image: url('https://librenard.fr/site/images/wiki/images/cover_book/2026-04/gemini-generated-image-4y9qlf4y9qlf4y9q.webp')" aria-hidden="true"></div>
-                    <span class="book-card-reading-time" title="Temps de lecture estimé">~20 min<span class="sr-only"> de lecture</span></span>
-                    <div class="book-card-body">
-                        <h2 class="book-card-title">Notions Réseau</h2>
-
-                        <div class="book-card-footer">
-                            <span class="book-card-meta">Mis à jour le 6 avril 2026</span>
+                            <span class="book-card-meta">Mis à jour le 12 juillet 2026</span>
                             <span class="book-card-arrow" aria-hidden="true">→</span>
                         </div>
                     </div>
                 </a>
             </div>
         </section>
+
+        <aside class="wiki-crosslink wiki-hide-in-view">
+            <p>J'ai aussi des notes sur mes projets perso — Uptime Kuma, Beszel, et autres bidouilles.</p>
+            <a href="projets.html" class="btn-link">Voir aussi mes notes de projets →</a>
+        </aside>
 
         <section class="cta-section">
             <h2>Une suggestion, une coquille ?</h2>

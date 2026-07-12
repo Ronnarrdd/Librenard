@@ -146,6 +146,65 @@
     gap: 1.8rem;
 }
 
+/* Puces de filtre par categorie (tags Bookstack), generees au build et
+   re-rendues par le SPA (js/wiki/views.js viewList). Interactivite dans
+   js/wiki/filters.js ; sans JS, elles sont inertes et tout reste visible. */
+.wiki-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-bottom: 1.8rem;
+}
+
+.wiki-filter-chip {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 500;
+    font-size: 0.92rem;
+    padding: 0.4rem 1.05rem;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 154, 107, 0.35);
+    background: var(--bg-card);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.wiki-filter-chip:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-deep);
+    transform: translateY(-2px);
+}
+
+.wiki-filter-chip.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(255, 154, 107, 0.35);
+}
+
+.dark-mode .wiki-filter-chip {
+    border-color: rgba(255, 154, 107, 0.3);
+}
+
+.dark-mode .wiki-filter-chip.active {
+    color: #1f1813;
+}
+
+/* Cartes masquees par le filtre actif */
+.book-card.filter-hidden {
+    display: none;
+}
+
+/* Rejoue l'apparition des cartes a chaque changement de filtre */
+.books-grid.filter-animate .book-card {
+    animation: fade-in 0.25s ease-out;
+}
+
+@media (max-width: 680px) {
+    .wiki-filters { gap: 0.45rem; margin-bottom: 1.4rem; }
+    .wiki-filter-chip { font-size: 0.85rem; padding: 0.34rem 0.9rem; }
+}
+
 .book-card {
     display: flex;
     flex-direction: column;
@@ -376,6 +435,23 @@
 @media (max-width: 680px) {
     .page-subsection { margin-top: 2rem; }
     .page-subsection-header h2 { font-size: 1.5rem; }
+}
+
+/* Pont vers l'autre etagere wiki (ex. projets.html depuis wiki.html) */
+.wiki-crosslink {
+    margin: 2.5rem 0 0;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+}
+
+.wiki-crosslink p {
+    margin: 0 0 0.5rem;
+}
+
+.wiki-crosslink .btn-link {
+    font-size: 1.05rem;
 }
 
 

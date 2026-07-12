@@ -11,7 +11,12 @@ import {
     readingTimesManifest,
     formatDateFr,
     ensureHeadingIds,
-    rewriteBookstackLinks
+    rewriteBookstackLinks,
+    bookCategory,
+    categoryKey,
+    categoryFilters,
+    groupBooksByCategory,
+    UNCATEGORIZED_LABEL
 } from './wiki-static.mjs';
 
 // ---------- Chemins ----------
@@ -160,4 +165,100 @@ test('rewriteBookstackLinks : cible hors perimetre -> URL Bookstack conservee', 
 test('rewriteBookstackLinks : ne tronque pas un slug plus long', () => {
     const html = '<a href="https://librenard.fr/wiki/books/bases-de-linux-avance">x</a>';
     assert.equal(rewriteBookstackLinks(html, REWRITE_OPTS), html);
+});
+
+// ---------- Categories (tags Bookstack) ----------
+
+test('bookCategory : nom du premier tag, ou value si le nom est vide', () => {
+    assert.equal(bookCategory([{ name: 'Linux', value: '' }]), 'Linux');
+    assert.equal(bookCategory([{ name: '', value: 'Supervision' }]), 'Supervision');
+    assert.equal(bookCategory([{ name: '  Réseau  ' }]), 'Réseau');
+    assert.equal(bookCategory([{ name: 'Windows' }, { name: 'Linux' }]), 'Windows');
+});
+
+test('bookCategory : null sans tag exploitable', () => {
+    assert.equal(bookCategory([]), null);
+    assert.equal(bookCategory(null), null);
+    assert.equal(bookCategory([{ name: '', value: '' }]), null);
+});
+
+const catOf = (b) => bookCategory(b.tags);
+
+test('groupBooksByCategory : ordre preferentiel puis Autres en dernier', () => {
+    const books = [
+        { slug: 'a', tags: [{ name: 'Supervision' }] },
+        { slug: 'b', tags: [] },
+        { slug: 'c', tags: [{ name: 'Linux' }] },
+        { slug: 'd', tags: [{ name: 'Windows' }] }
+    ];
+    const groups = groupBooksByCategory(books, catOf);
+    assert.deepEqual(groups.map(g => g.category), ['Linux', 'Windows', 'Supervision', UNCATEGORIZED_LABEL]);
+    assert.deepEqual(groups.map(g => g.books.map(b => b.slug)), [['c'], ['d'], ['a'], ['b']]);
+});
+
+test('groupBooksByCategory : un tag inedit cree sa section dynamiquement', () => {
+    const books = [
+        { slug: 'a', tags: [{ name: 'Virtualisation' }] },
+        { slug: 'b', tags: [{ name: 'Linux' }] },
+        { slug: 'c', tags: [{ name: 'Domotique' }] }
+    ];
+    const groups = groupBooksByCategory(books, catOf);
+    // Categories connues d'abord, inedites ensuite en alphabetique
+    assert.deepEqual(groups.map(g => g.category), ['Linux', 'Domotique', 'Virtualisation']);
+});
+
+test('groupBooksByCategory : fusion insensible a la casse et aux accents', () => {
+    const books = [
+        { slug: 'a', tags: [{ name: 'reseau' }] },
+        { slug: 'b', tags: [{ name: 'Réseau' }] },
+        { slug: 'c', tags: [{ name: 'RESEAU' }] }
+    ];
+    const groups = groupBooksByCategory(books, catOf);
+    assert.equal(groups.length, 1);
+    // Graphie canonique de la liste preferentielle
+    assert.equal(groups[0].category, 'Réseau');
+    assert.equal(groups[0].books.length, 3);
+});
+
+test('groupBooksByCategory : l\'ordre des livres est conserve dans chaque groupe', () => {
+    const books = [
+        { slug: 'recent', tags: [{ name: 'Linux' }] },
+        { slug: 'ancien', tags: [{ name: 'Linux' }] }
+    ];
+    const groups = groupBooksByCategory(books, catOf);
+    assert.deepEqual(groups[0].books.map(b => b.slug), ['recent', 'ancien']);
+});
+
+// ---------- Puces de filtre ----------
+
+test('categoryKey : slug stable, "Autres" par defaut', () => {
+    assert.equal(categoryKey('Matériel & stockage'), 'materiel-stockage');
+    assert.equal(categoryKey('Réseau'), 'reseau');
+    assert.equal(categoryKey(null), categoryKey(UNCATEGORIZED_LABEL));
+    assert.equal(categoryKey('  '), 'autres');
+});
+
+test('categoryFilters : ordre preferentiel, cles slugifiees, Autres en dernier', () => {
+    const books = [
+        { slug: 'a', tags: [{ name: 'Supervision' }] },
+        { slug: 'b', tags: [] },
+        { slug: 'c', tags: [{ name: 'Linux' }] },
+        { slug: 'd', tags: [{ name: 'Virtualisation' }] }
+    ];
+    const filters = categoryFilters(books, catOf);
+    assert.deepEqual(filters, [
+        { key: 'linux', label: 'Linux' },
+        { key: 'supervision', label: 'Supervision' },
+        { key: 'virtualisation', label: 'Virtualisation' },
+        { key: 'autres', label: UNCATEGORIZED_LABEL }
+    ]);
+});
+
+test('categoryFilters : pas de puces avec moins de deux categories', () => {
+    assert.deepEqual(categoryFilters([], catOf), []);
+    assert.deepEqual(categoryFilters([{ slug: 'a', tags: [] }], catOf), []);
+    assert.deepEqual(categoryFilters([
+        { slug: 'a', tags: [{ name: 'Linux' }] },
+        { slug: 'b', tags: [{ name: 'linux' }] }
+    ], catOf), []);
 });

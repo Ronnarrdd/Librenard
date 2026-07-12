@@ -29,7 +29,9 @@ import {
     readingTimesManifest,
     formatDateFr,
     ensureHeadingIds,
-    rewriteBookstackLinks
+    rewriteBookstackLinks,
+    bookCategory,
+    categoryKey
 } from './wiki-static.mjs';
 import { WikiImageMirror } from './wiki-images.mjs';
 
@@ -116,6 +118,10 @@ export async function fetchWikiContent() {
     await Promise.all(books.map(async book => {
         const detail = await apiFetch(`/books/${book.id}`);
         Object.assign(book, detail);
+
+        // Categorie = premier tag Bookstack du livre (le detail expose tags,
+        // pas la liste /books). Dynamique : tout nouveau tag cree sa section.
+        book.category = bookCategory(book.tags);
 
         // Aplatit livre -> [pages], en gardant la reference du chapitre.
         const flat = [];
@@ -376,7 +382,7 @@ export function bookCardStaticHtml(book) {
     const readingBadge = book.readingMinutes
         ? `<span class="book-card-reading-time" title="Temps de lecture estimé">~${book.readingMinutes} min<span class="sr-only"> de lecture</span></span>`
         : '';
-    return `<a class="book-card" href="${bookOutputPath(book.slug)}">
+    return `<a class="book-card" href="${bookOutputPath(book.slug)}" data-category="${categoryKey(book.category)}">
     <div class="${coverClass}"${coverStyle} aria-hidden="true">${emptySvg}</div>${readingBadge ? `\n    ${readingBadge}` : ''}
     <div class="book-card-body">
         <h2 class="book-card-title">${escapeHtml(book.name)}</h2>
@@ -463,6 +469,19 @@ export async function prerenderWiki(rootDir) {
     await writeFile(
         path.join(wikiDir, 'reading-times.json'),
         `${JSON.stringify(readingTimes, null, 2)}\n`,
+        'utf8'
+    );
+
+    // Categories par livre { slug: categorie }, consomme par le SPA
+    // (js/wiki/api.js getBookCategories) pour regrouper la grille re-rendue
+    // au runtime, la liste /books de l'API n'exposant pas les tags.
+    const bookCategories = {};
+    for (const book of books) {
+        if (book.category) bookCategories[book.slug] = book.category;
+    }
+    await writeFile(
+        path.join(wikiDir, 'book-categories.json'),
+        `${JSON.stringify(bookCategories, null, 2)}\n`,
         'utf8'
     );
 

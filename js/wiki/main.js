@@ -12,6 +12,7 @@ import { escapeHtml } from './helpers.js';
 import { snapshotDefaultMeta } from './meta.js';
 import { initDyslexicMode } from './dyslexic.js';
 import { initWikiSearch } from './search.js';
+import { initWikiFilters } from './filters.js';
 import { loadWikiFeed } from './feed.js';
 import { renderLoading, viewList, viewBook, viewPage } from './views.js';
 import { stopReadingProgress, disconnectTocObserver } from './article.js';
@@ -182,6 +183,7 @@ function init() {
     snapshotDefaultMeta();
     initDyslexicMode();
     initWikiSearch();
+    initWikiFilters();
     setupPrefetch();
     loadWikiFeed();
     router();
