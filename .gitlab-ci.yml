@@ -1,0 +1,109 @@
+# Pipeline Librenard — GitLab CI/CD (Framagit).
+# Token BookStack : js/wiki/api.js (surcharge possible via la variable secrète BOOKSTACK_TOKEN).
+
+image: node:22-bookworm
+
+variables:
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+
+# Optimisation du cache pour accélérer l'installation des dépendances
+cache:
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - .npm/
+
+before_script:
+  - npm ci --prefer-offline --no-audit
+
+stages:
+  - test
+  - build
+  - cron
+
+# --- Étape : Test (Renifler & Vigilance) ---
+
+reniflage-tests-unitaires:
+  stage: test
+  script:
+    - npm test
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule"
+
+vigilance-audit-npm:
+  stage: test
+  allow_failure: true
+  script:
+    - npm audit --audit-level=high
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule"
+
+# --- Étape : Build (Tisser & Patrouiller) ---
+
+tissage-et-patrouille:
+  stage: build
+  script:
+    - |
+      if [ "$CI_PIPELINE_SOURCE" = "push" ] && [ "$CI_COMMIT_BRANCH" = "main" ]; then
+        echo "Build complet avec prérendu wiki (token dans js/wiki/api.js)."
+        npm run build
+      else
+        echo "Build hors ligne (--no-wiki) : pas d'appel API sur les branches/PR."
+        npm run build -- --no-wiki
+      fi
+    - |
+      if [ ! -f pagefind/pagefind.js ]; then
+        if [ "$CI_PIPELINE_SOURCE" = "push" ] && [ "$CI_COMMIT_BRANCH" = "main" ]; then
+          echo "Index Pagefind manquant sur main : la recherche wiki offline est cassée."
+          exit 1
+        fi
+        echo "Pas d'index Pagefind (build --no-wiki) : normal sur cette branche."
+      else
+        echo "Index Pagefind présent : recherche offline OK."
+      fi
+    - |
+      test -f sitemap.xml
+      URL_COUNT=$(grep -c '<url>' sitemap.xml)
+      WIKI_COUNT=$(grep -c '<loc>https://librenard.fr/site/wiki/' sitemap.xml || true)
+      echo "Sitemap : ${URL_COUNT} URLs au total, dont ${WIKI_COUNT} pages wiki."
+      if [ "$CI_PIPELINE_SOURCE" = "push" ] && [ "$CI_COMMIT_BRANCH" = "main" ] && [ "$WIKI_COUNT" -lt 50 ]; then
+        echo "Alerte : le sitemap main contient peu de pages wiki (${WIKI_COUNT})."
+        exit 1
+      fi
+    - npm run check:links
+  artifacts:
+    name: "site-$CI_COMMIT_REF_SLUG"
+    expire_in: 14 days
+    when: always
+    paths:
+      - index.html
+      - projets.html
+      - wiki.html
+      - outils.html
+      - contact.html
+      - a-propos.html
+      - error/
+      - wiki/
+      - css/
+      - js/
+      - images/
+      - vendor/
+      - pagefind/
+      - sitemap.xml
+      - robots.txt
+      - site.webmanifest
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule"
+
+# --- Étape : Cron (Vérification des liens externes) ---
+
+exploration-liens-externes:
+  stage: cron
+  allow_failure: true
+  script:
+    - npm run build
+    - npm run check:links:external
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"

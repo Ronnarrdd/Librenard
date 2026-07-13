@@ -139,6 +139,13 @@ async function exists(filePath) {
 async function checkLocalLink(link, htmlCache, idCache) {
     const target = resolveLocalTarget(link.value, link.filePath);
     if (!await exists(target)) {
+        const relTarget = path.relative(rootDir, target).replaceAll(path.sep, '/');
+        if (relTarget.startsWith('wiki/') || relTarget.startsWith('images/wiki/')) {
+            const wikiExists = await exists(path.join(rootDir, 'wiki'));
+            if (!wikiExists) {
+                return null;
+            }
+        }
         return `Introuvable: ${relative(link.filePath)} -> ${link.value}`;
     }
 
