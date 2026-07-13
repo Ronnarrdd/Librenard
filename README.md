@@ -121,15 +121,19 @@ Le build génère aussi :
 
 ## La patrouille (CI)
 
-Chaque push déclenche le pipeline Forgejo Actions (`.forgejo/workflows/ci.yml`) :
+Chaque push déclenche les pipelines d'intégration continue sur nos trois plateformes (Forgejo, GitHub, Framagit/GitLab) :
+- **Forgejo Actions** (`.forgejo/workflows/ci.yml`)
+- **GitHub Actions** (`.github/workflows/ci.yml`)
+- **GitLab CI/CD** (`.gitlab-ci.yml`)
 
+Les étapes de ces pipelines comprennent :
 - **Reniflage** : les tests unitaires flairent les régressions
 - **Vigilance** : `npm audit` surveille les dépendances
-- **Tissage et patrouille** : build complet du site, puis vérification de la recherche
-  Pagefind, du sitemap et des liens internes
+- **Tissage et patrouille** : build complet du site, puis vérification de la recherche Pagefind, du sitemap et des liens internes
 
-Sur `main`, le build est complet (avec prérendu wiki). Sur les branches et PR,
-il tourne en `--no-wiki` pour ne pas marteler l'API.
+Sur `main`, le build est complet (avec prérendu wiki). Sur les branches et pull requests, il tourne en `--no-wiki` pour ne pas marteler l'API BookStack.
+
+Des vérifications hebdomadaires des liens externes sont également configurées sur chaque plateforme (via cron/planification).
 
 ## Plan du terrier
 

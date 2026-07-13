@@ -1,0 +1,35 @@
+# Exploration des liens externes — GitHub Actions.
+# Déclenchement manuel via l'onglet Actions (workflow_dispatch) ou chaque lundi à 06h00 UTC.
+
+name: Exploration des liens externes
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  exploration-liens-externes:
+    name: Exploration — liens externes
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Configurer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Build du site
+        env:
+          BOOKSTACK_TOKEN: ${{ secrets.BOOKSTACK_TOKEN }}
+        run: npm run build
+
+      - name: Vérification des liens externes
+        run: npm run check:links:external

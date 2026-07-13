@@ -1,0 +1,137 @@
+# Pipeline Librenard — GitHub Actions.
+# Token BookStack : js/wiki/api.js (surcharge possible via le secret BOOKSTACK_TOKEN).
+
+name: Pipeline Librenard
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # --- Renifler : tests et sécurité des dépendances ---
+
+  reniflage-tests-unitaires:
+    name: Reniflage — tests unitaires
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Configurer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Exécuter les tests unitaires
+        run: npm test
+
+  vigilance-audit-npm:
+    name: Vigilance — audit npm
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Configurer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Audit des dépendances
+        run: npm audit --audit-level=high
+
+  # --- Tisser puis patrouiller : build et vérifications dans le même job ---
+
+  tissage-et-patrouille:
+    name: Tissage — build du site et patrouille
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Configurer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Build du site
+        env:
+          BOOKSTACK_TOKEN: ${{ secrets.BOOKSTACK_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ]; then
+            echo "Build complet avec prérendu wiki (token dans js/wiki/api.js)."
+            npm run build
+          else
+            echo "Build hors ligne (--no-wiki) : pas d'appel API sur les branches/PR."
+            npm run build -- --no-wiki
+          fi
+
+      - name: Patrouille — recherche Pagefind
+        run: |
+          if [ ! -f pagefind/pagefind.js ]; then
+            if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ]; then
+              echo "Index Pagefind manquant sur main : la recherche wiki offline est cassée."
+              exit 1
+            fi
+            echo "Pas d'index Pagefind (build --no-wiki) : normal sur cette branche."
+            exit 0
+          fi
+          echo "Index Pagefind présent : recherche offline OK."
+
+      - name: Patrouille — cartographie sitemap
+        continue-on-error: true
+        run: |
+          test -f sitemap.xml
+          URL_COUNT=$(grep -c '<url>' sitemap.xml)
+          WIKI_COUNT=$(grep -c '<loc>https://librenard.fr/site/wiki/' sitemap.xml || true)
+          echo "Sitemap : ${URL_COUNT} URLs au total, dont ${WIKI_COUNT} pages wiki."
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ] && [ "$WIKI_COUNT" -lt 50 ]; then
+            echo "Alerte : le sitemap main contient peu de pages wiki (${WIKI_COUNT})."
+            exit 1
+          fi
+
+      - name: Patrouille — liens internes
+        run: npm run check:links
+
+      - name: Publication de l'artefact du site
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            index.html
+            projets.html
+            wiki.html
+            outils.html
+            contact.html
+            a-propos.html
+            error/
+            wiki/
+            css/
+            js/
+            images/
+            vendor/
+            pagefind/
+            sitemap.xml
+            robots.txt
+            site.webmanifest
