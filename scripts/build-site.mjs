@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { formatContent } from './lib/format-html.mjs';
 import { site, withBasePath, prefixFor, renderDocument, escapeXml, fallbackAttr } from './lib/site-template.mjs';
 import { prerenderWiki, bookCardStaticHtml } from './lib/wiki-prerender.mjs';
-import { categoryFilters } from './lib/wiki-static.mjs';
+import { categoryFilters, readingMinutes, wordCountFromHtml, stripHtmlText, formatDateFr } from './lib/wiki-static.mjs';
 import { escapeHtml } from '../js/wiki/helpers.js';
 import { setupVendorAssets } from './lib/vendor-assets.mjs';
 import { buildPagefindIndex } from './lib/pagefind-index.mjs';
@@ -111,6 +111,23 @@ const pages = [
         priority: '0.5'
     },
     {
+        output: 'blog.html',
+        navKey: 'blog',
+        title: 'Blog - Librenard',
+        description: "Blog personnel, billets d'humeur et actualités numériques de Librenard.",
+        keywords: 'blog, articles, actualités, billets',
+        ogTitle: 'Blog - Librenard',
+        ogDescription: "Billets d'humeur et actualités numériques.",
+        twitterTitle: 'Blog - Librenard',
+        twitterDescription: "Billets d'humeur et actualités numériques.",
+        scripts: [
+            { src: 'js/script.js' },
+            { type: 'module', src: 'js/wiki/main.js' }
+        ],
+        changefreq: 'weekly',
+        priority: '0.8'
+    },
+    {
         output: 'error/404.html',
         title: 'Oups… page introuvable - Librenard',
         description: "Oups ! Cette page est introuvable. Le renard s'est perdu en chemin — retrouvez votre route sur Librenard.",
@@ -190,10 +207,46 @@ ${filters.map(f => `<button type="button" class="wiki-filter-chip" data-category
     return `${chips}<div class="books-grid">\n${books.map(bookCardStaticHtml).join('\n')}\n</div>`;
 }
 
+function blogCardStaticHtml(page, book) {
+    const output = `wiki/${book.slug}/${page.slug}.html`;
+    const minutes = page.detail ? readingMinutes(wordCountFromHtml(page.detail.html)) : 0;
+    const readingBadge = minutes > 0
+        ? `<span class="book-card-reading-time" title="Temps de lecture estimé">~${minutes} min<span class="sr-only"> de lecture</span></span>`
+        : '';
+    const description = page.detail ? stripHtmlText(page.detail.html, 150) : '';
+    const descHtml = description ? `<p class="book-card-description">${escapeHtml(description)}</p>` : '';
+    return `<a class="book-card blog-card" href="${output}">
+    ${readingBadge}
+    <div class="book-card-body">
+        <h2 class="book-card-title">${escapeHtml(page.name)}</h2>
+        ${descHtml}
+        <div class="book-card-footer">
+            <span class="book-card-meta">Publié le ${page.detail ? formatDateFr(page.detail.created_at) : ''}</span>
+            <span class="book-card-arrow" aria-hidden="true">→</span>
+        </div>
+    </div>
+</a>`;
+}
+
+function blogGridHtml(books) {
+    const pages = [];
+    for (const book of books) {
+        for (const p of book.flatPages) {
+            pages.push({ page: p, book });
+        }
+    }
+    if (pages.length === 0) {
+        return `<div class="wiki-empty" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);"><p>Aucun article publié pour le moment. Revenez plus tard !</p></div>`;
+    }
+    pages.sort((a, b) => new Date(b.page.detail?.created_at || 0) - new Date(a.page.detail?.created_at || 0));
+    return `<div class="books-grid blog-grid">\n${pages.map(p => blogCardStaticHtml(p.page, p.book)).join('\n')}\n</div>`;
+}
+
 function injectWikiGrid(content, books, output) {
+    const gridHtml = output === 'blog.html' ? blogGridHtml(books) : wikiGridHtml(books);
     const replaced = content.replace(
         /(<section id="wiki-view"[^>]*>)[\s\S]*?(<\/section>)/,
-        `$1\n${wikiGridHtml(books)}\n$2`
+        `$1\n${gridHtml}\n$2`
     );
     if (replaced === content) throw new Error(`Section #wiki-view introuvable dans ${output}.`);
     return replaced;
@@ -203,7 +256,8 @@ function injectWikiGrid(content, books, output) {
 // l'attribut data-shelf du #wiki-view de la page).
 const pageShelves = {
     'wiki.html': 'ressources-references',
-    'projets.html': 'projets'
+    'projets.html': 'projets',
+    'blog.html': 'articles'
 };
 
 async function renderPage(page, booksByShelf) {

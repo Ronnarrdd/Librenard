@@ -13,7 +13,8 @@ export const site = {
     // label/pageHref servent de racine au fil d'Ariane des pages statiques.
     wikiShelves: [
         { slug: 'ressources-references', pageHref: 'wiki.html', label: 'Wiki' },
-        { slug: 'projets', pageHref: 'projets.html', label: 'Projets' }
+        { slug: 'projets', pageHref: 'projets.html', label: 'Projets' },
+        { slug: 'articles', pageHref: 'blog.html', label: 'Blog' }
     ]
 };
 
@@ -21,6 +22,7 @@ export const navItems = [
     { href: 'index.html', key: 'accueil', label: 'Accueil' },
     { href: 'projets.html', key: 'projets', label: 'Projets' },
     { href: 'wiki.html', key: 'wiki', label: 'Wiki' },
+    { href: 'blog.html', key: 'blog', label: 'Blog' },
     { href: 'outils.html', key: 'outils', label: 'Outils' },
     { href: 'contact.html', key: 'contact', label: 'Contact' },
     { href: 'a-propos.html', key: 'a-propos', label: 'À propos' }

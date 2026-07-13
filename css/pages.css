@@ -465,3 +465,25 @@
     75%      { transform: translateY(-4px) rotate(8deg); }
 }
 
+
+/* ============ BLOG ============ */
+.blog-grid {
+    grid-template-columns: 1fr;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.blog-card {
+    padding: 1rem;
+}
+.blog-card .book-card-reading-time {
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--bg-soft);
+    color: var(--text-color);
+    box-shadow: none;
+    border: 1px solid var(--accent-soft);
+}
+.dark-mode .blog-card .book-card-reading-time {
+    background: rgba(255, 255, 255, 0.05);
+}
+

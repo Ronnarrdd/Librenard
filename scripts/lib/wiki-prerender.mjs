@@ -218,7 +218,7 @@ function renderArticleDocument(books, book, ref, prevRef, nextRef) {
     const bcItems = [{ text: book.name, href: relHref(output, bookOutputPath(book.slug)) }];
     if (ref.chapter) bcItems.push({ text: ref.chapter.name });
     bcItems.push({ text: page.name });
-    const breadcrumb = breadcrumbHtml(prefix, book.shelfRef, bcItems);
+    const breadcrumb = book.shelfRef.pageHref === 'blog.html' ? '' : breadcrumbHtml(prefix, book.shelfRef, bcItems);
 
     const navLink = (r, cls, dir) => `
             <a href="${relHref(output, articleOutputPath(book.slug, r.slug))}" class="wiki-nav-link ${cls}">
@@ -231,13 +231,15 @@ function renderArticleDocument(books, book, ref, prevRef, nextRef) {
             ${nextRef ? navLink(nextRef, 'wiki-nav-next', 'Suivant →') : '<span></span>'}
         </nav>` : '';
 
-    const toc = tocSidebarHtml(headings);
+    const toc = book.shelfRef.pageHref === 'blog.html' ? '' : tocSidebarHtml(headings);
+    const layoutClass = book.shelfRef.pageHref === 'blog.html' ? 'wiki-article-layout blog-article-layout' : 'wiki-article-layout';
+    const searchHtml = book.shelfRef.pageHref === 'blog.html' ? '' : renderWikiSearch();
     const content = `        ${breadcrumb}
 
-        ${renderWikiSearch()}
+        ${searchHtml}
 
-        <div class="wiki-article-layout${toc ? ' has-toc' : ''}">
-            <div class="wiki-toc-slot" id="wiki-toc-slot">${toc}</div>
+        <div class="${layoutClass}${toc ? ' has-toc' : ''}">
+            ${toc ? `<div class="wiki-toc-slot" id="wiki-toc-slot">${toc}</div>` : ''}
             <article class="wiki-article">
                 <header class="wiki-article-header">
                     <h1>${escapeHtml(page.name)}</h1>
@@ -260,7 +262,7 @@ ${bodyHtml}
                 canonicalUrl: canonical,
                 ogType: 'article',
                 ogImage: book.cover?.url || site.ogImage,
-                pagefindType: 'Article',
+                pagefindType: book.shelfRef.pageHref === 'blog.html' ? 'Billet' : 'Article',
                 pagefindBook: book.name,
                 jsonLd: {
                     '@context': 'https://schema.org',

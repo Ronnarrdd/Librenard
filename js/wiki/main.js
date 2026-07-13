@@ -83,6 +83,12 @@ async function router() {
         } else if (state.name === 'book') {
             await viewBook(view, state.bookSlug);
         } else {
+            if (view.dataset.shelf === 'articles' && hasStaticGrid) {
+                // Le blog est rendu statiquement avec les articles (pages) extraits. 
+                // L'API ne permettant pas de re-calculer les extraits de texte des pages
+                // sans N requêtes, on laisse la grille statique.
+                return;
+            }
             await viewList(view);
         }
     } catch (err) {
