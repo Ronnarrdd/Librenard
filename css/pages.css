@@ -6,8 +6,7 @@
     align-items: center;
 }
 
-.contact-email,
-.contact-linkedin {
+.contact-email {
     font-family: 'Nunito', sans-serif;
     font-weight: 800;
     font-size: 1.02rem;
@@ -30,26 +29,6 @@
     transform: translateY(-2px);
     box-shadow: 0 10px 22px rgba(255, 154, 107, 0.5);
     background: var(--accent-strong);
-}
-
-.contact-linkedin {
-    color: var(--accent-deep);
-    background: var(--bg-card);
-    border: 2px solid var(--accent-soft);
-    box-shadow: var(--card-shadow);
-}
-
-.contact-linkedin:hover {
-    transform: translateY(-2px);
-    color: #fff;
-    background: #0a66c2; /* couleur officielle LinkedIn, reservee au hover pour rester dans la palette du site */
-    border-color: #0a66c2;
-    box-shadow: 0 10px 22px rgba(10, 102, 194, 0.35);
-}
-
-.dark-mode .contact-linkedin {
-    background: var(--bg-card);
-    border-color: var(--accent-soft);
 }
 
 /* ============ HERO DE PAGE (a-propos, contact) ============ */
